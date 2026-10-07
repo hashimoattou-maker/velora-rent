@@ -17,9 +17,21 @@ npm install
 npm run dev   # http://localhost:3000/fr
 ```
 
+## Backend 100% Hostinger : PHP + MySQL (inclus Business, sans Supabase)
+
+1. **Créer la base :** hPanel → Databases → créez DB + user (notez `host/user/name/pass`)
+2. **Importer :** phpMyAdmin → Import → `database.sql` (9 tables + 12 voitures + 4 agences + avis)
+3. **Connecter l'API :** File Manager → `public_html/api/` → créez fichier `.db.php` :
+```php
+<?php
+return ['host'=>'localhost','name'=>'uXXXX_velora','user'=>'uXXXX_velora','pass'=>'MOT_DE_PASSE_FORT'];
+```
+4. Test : `https://domaine.com/api/cars/list.php` → `{"ok":true,"cars":[...]}`
+5. Le site détecte l'API tout seul : si dispo → mode serveur (MySQL), sinon mode démo local. Rien à changer côté visiteurs.
+
 ## Déployer sur Hostinger (Shared)
 1. `npm run build` → dossier `out/` généré
-2. Hostinger → hPanel → File Manager → `public_html` : uploadez **le contenu de `out/`** (avec `.htaccess` inclus)
+2. Hostinger → hPanel → File Manager → `public_html` : uploadez **le contenu de `out/`** + dossier **`api/`** (avec `.htaccess` inclus)
 3. Domaine → https://votredomaine.com/fr
 
 ## Hostinger VPS / Node

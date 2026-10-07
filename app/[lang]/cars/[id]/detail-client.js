@@ -15,10 +15,12 @@ export function DetailClient({ lang, id }) {
   if (!car) return <p>Not found</p>;
   const days = start && end ? Math.max(1, Math.round((new Date(end) - new Date(start)) / 86400000)) : 1;
   const total = days * car.price + (gps ? days * 40 : 0) + (baby ? days * 30 : 0) + (full ? days * 99 : 0);
-  const book = () => {
+  const book = async () => {
     if (!user) { router.push(`/${lang}/login?next=/${lang}/cars/${car.id}`); return; }
-    const code = addBooking({ car: car.brand + ' ' + car.model, city: car.city, start, end, days, total, pay, status: pay === 'now' ? 'paid' : 'pending' });
-    router.push(`/${lang}/payment?code=${code}&total=${total}&pay=${pay}`);
+    try {
+      const r = await addBooking({ car_slug: car.id, car: car.brand + ' ' + car.model, city: car.city, start, end, days, total, pay, gps, baby, full, status: pay === 'now' ? 'paid' : 'pending' });
+      router.push(`/${lang}/payment?code=${r.code}&total=${r.total}&pay=${pay}`);
+    } catch (e) { alert('Erreur: ' + (e.message || e)); }
   };
   return (<><Navbar lang={lang} /><div className="page"><div className="row">
     <div><img src={car.img} style={{ width: '100%', borderRadius: 20 }} /><div className="card" style={{ marginTop: 12 }}>

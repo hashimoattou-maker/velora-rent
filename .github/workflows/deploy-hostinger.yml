@@ -18,13 +18,22 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Setup PHP (syntax check API)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Lint PHP
+        run: |
+          find api -name "*.php" -not -name ".db.php" -exec php -l {} \;
+
       - name: Install + Build (static export → out/)
         run: |
           npm ci
           npm run build
           ls out | head -20
 
-      - name: Deploy out/ to Hostinger via FTP
+      - name: Deploy site (out/) to Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -38,3 +47,19 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+
+      - name: Deploy backend (api/) to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          protocol: ftp
+          local-dir: ./api/
+          server-dir: ${{ secrets.FTP_DIR }}api/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .db.php
+            config.sample.php
