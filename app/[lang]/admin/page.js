@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { Navbar, Footer } from '@/components/ui';
 import { admin, getAdminToken, setAdminToken } from '@/lib/api';
+import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp } from 'lucide-react';
 
-const TABS = [['stats', '📊 Stats'], ['bookings', '📋 Réservations'], ['clients', '👥 Clients'], ['cars', '🚗 Voitures'], ['inbox', '✉️ Messages']];
+const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['inbox', 'Messages', Inbox]];
 
 export default function Admin({ params }) {
   const lang = params.lang;
@@ -47,7 +48,7 @@ export default function Admin({ params }) {
   };
 
   if (!tok) return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 440 }}>
-    <div className="card"><h2>🔐 Admin Velora</h2><p className="mut">Clé secrète (fichier <code>api/.admin.php</code> sur serveur).</p>
+    <div className="card"><h2 style={{ display: 'flex', gap: 10, alignItems: 'center' }}><Lock size={22} /> Admin Velora</h2><p className="mut">Clé secrète (fichier <code>api/.admin.php</code> sur serveur).</p>
       {err && <div className="alert" style={{ background: '#fdecec', borderColor: '#f5a3a3' }}>❌ {err}</div>}
       <form onSubmit={doLogin} className="field" style={{ display: 'grid', gap: 10 }}>
         <input type="password" required value={key} onChange={(e) => setKey(e.target.value)} placeholder="Clé admin…" />
@@ -56,13 +57,13 @@ export default function Admin({ params }) {
 
   return (<><Navbar lang={lang} /><div className="page">
     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-      <h1 style={{ marginInlineEnd: 'auto' }}>🔐 Admin — Velora Rent</h1>
-      <button className="btn-ghost" style={{ color: '#111', borderColor: '#ccc' }} onClick={() => { setAdminToken(null); setTok(null); setData(null); }}>Déconnexion</button>
-      <button className="btn" onClick={() => load()}>↻ Actualiser</button>
+      <h1 style={{ marginInlineEnd: 'auto' }}><span className="ic"><TrendingUp size={22} /></span>Admin — Velora Rent</h1>
+      <button className="btn-light" onClick={() => { setAdminToken(null); setTok(null); setData(null); }}><LogOut size={15} /> Déconnexion</button>
+      <button className="btn" onClick={() => load()}><RefreshCw size={15} /> Actualiser</button>
     </div>
     {err && <div className="alert" style={{ background: '#fdecec', borderColor: '#f5a3a3' }}>❌ {err}</div>}
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '12px 0' }}>
-      {TABS.map(([v, l]) => <button key={v} className={tab === v ? 'btn' : 'btn-ghost'} style={tab === v ? {} : { color: '#111', borderColor: '#ccc' }} onClick={() => { setTab(v); setData(null); setTimeout(() => load(v, v === 'bookings' ? filter : ''), 0); }}>{l}</button>)}
+      {TABS.map(([v, l, I]) => <button key={v} className={tab === v ? 'btn' : 'btn-light'} onClick={() => { setTab(v); setData(null); setTimeout(() => load(v, v === 'bookings' ? filter : ''), 0); }}><I size={15} /> {l}</button>)}
       {tab === 'bookings' && <select value={filter} onChange={(e) => { setFilter(e.target.value); load('bookings', e.target.value); }}>
         <option value="">Tous statuts</option><option value="pending">⏳ pending</option><option value="paid">✅ paid</option><option value="cancelled">❌ cancelled</option></select>}
     </div>

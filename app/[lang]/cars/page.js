@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Navbar, Footer, CarCard } from '@/components/ui';
+import { Search, Car as CarIcon, SlidersHorizontal } from 'lucide-react';
 import { dict } from '@/lib/i18n';
 import { CARS, CITIES } from '@/lib/data';
 export default function Cars({ params }) {
@@ -10,9 +11,10 @@ export default function Cars({ params }) {
   if (sort === 'price') list = [...list].sort((a, b) => a.price - b.price); else list = [...list].sort((a, b) => b.rating - a.rating);
   const types = [...new Set(CARS.map((c) => c.type))];
   return (<><Navbar lang={lang} /><div className="page">
-    <h1>🚗 {t.nav.cars} ({list.length})</h1>
-    <div className="card" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-      <input placeholder="Dacia, Golf…" value={q} onChange={(e) => setQ(e.target.value)} style={{ padding: 10, borderRadius: 10, border: '1px solid #ddd' }} />
+    <h1><span className="ic"><CarIcon size={22} /></span>{t.nav.cars} ({list.length})</h1>
+    <div className="card" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#68718f', fontWeight: 700 }}><SlidersHorizontal size={16} /></span>
+      <span style={{ position: 'relative' }}><Search size={15} style={{ position: 'absolute', insetInlineStart: 10, top: 12, color: '#9aa3b8' }} /><input placeholder="Dacia, Golf…" value={q} onChange={(e) => setQ(e.target.value)} style={{ padding: '10px 10px 10px 32px', borderRadius: 12, border: '1.5px solid #e2e6f2' }} /></span>
       <select value={city} onChange={(e) => setCity(e.target.value)}><option value="">{t.search.all}</option>{CITIES.map((c) => <option key={c}>{c}</option>)}</select>
       <select value={type} onChange={(e) => setType(e.target.value)}><option value="">{t.filters.type}</option>{types.map((x) => <option key={x}>{x}</option>)}</select>
       <label>{t.filters.price}: <b>{max} DH</b><input type="range" min="200" max="1200" value={max} onChange={(e) => setMax(+e.target.value)} /></label>

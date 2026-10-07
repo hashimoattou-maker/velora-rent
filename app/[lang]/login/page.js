@@ -6,6 +6,7 @@ import { Navbar, Footer } from '@/components/ui';
 import { dict } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
 import { serverAvailable } from '@/lib/api';
+import { LogIn, KeyRound, AlertTriangle } from 'lucide-react';
 function Inner({ lang }) {
   const t = dict[lang]; const router = useRouter(); const sp = useSearchParams();
   const { login, loginServer } = useStore() || {};
@@ -19,12 +20,12 @@ function Inner({ lang }) {
     login({ name: email.split('@')[0] || 'Client Velora', email, city: 'Casablanca' });
     router.push(next);
   };
-  return (<div className="page" style={{ maxWidth: 480 }}><div className="card"><h2>{t.auth.login_t}</h2><p className="mut">{t.auth.out}</p>
-    {err && <div className="alert" style={{ background: '#fdecec', borderColor: '#f5a3a3' }}>❌ {err}</div>}
+  return (<div className="page" style={{ maxWidth: 480 }}><div className="card"><h2 style={{ display: 'flex', gap: 10, alignItems: 'center' }}><KeyRound size={22} />{t.auth.login_t}</h2><p className="mut">{t.auth.out}</p>
+    {err && <div className="alert err"><AlertTriangle size={16} /> {err}</div>}
     <form onSubmit={go} className="field" style={{ display: 'grid', gap: 10 }}>
       <label>{t.auth.email}<input required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@mail.com" /></label>
       <label>{t.auth.pass}<input required type="password" value={pass} onChange={(e) => setPass(e.target.value)} /></label>
-      <button className="btn">{t.auth.go}</button></form>
+      <button className="btn"><LogIn size={15} /> {t.auth.go}</button></form>
     <p><Link href={`/${lang}/forgot`}>Mot de passe oublié ?</Link></p>
     <p><Link href={`/${lang}/register`}>{t.auth.nohave}</Link></p></div></div>);
 }
