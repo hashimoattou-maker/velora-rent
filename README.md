@@ -29,6 +29,16 @@ return ['host'=>'localhost','name'=>'uXXXX_velora','user'=>'uXXXX_velora','pass'
 4. Test : `https://domaine.com/api/cars/list.php` → `{"ok":true,"cars":[...]}`
 5. Le site détecte l'API tout seul : si dispo → mode serveur (MySQL), sinon mode démo local. Rien à changer côté visiteurs.
 
+## Dashboard Admin (sans phpMyAdmin)
+
+1. File Manager → `public_html/api/admin/` → créez fichier `.admin.php` :
+```php
+<?php
+return ['key' => 'BADAL_HADI_B KELMA_SERIa_TWILA'];
+```
+2. Ouvrez `https://domaine.com/fr/admin` → entrez la clé → stats, réservations (changer statut paid/pending/cancelled), clients, prix/activation voitures, messages + candidatures partenaires.
+3. La clé reste sur le serveur uniquement (jamais dans Git). Tokens admin : 24h, stockés en session navigateur.
+
 ## Déployer sur Hostinger (Shared)
 1. `npm run build` → dossier `out/` généré
 2. Hostinger → hPanel → File Manager → `public_html` : uploadez **le contenu de `out/`** + dossier **`api/`** (avec `.htaccess` inclus)
