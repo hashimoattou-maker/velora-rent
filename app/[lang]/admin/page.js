@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { Navbar, Footer } from '@/components/ui';
 import { admin, getAdminToken, setAdminToken } from '@/lib/api';
-import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp, KeyRound, Save } from 'lucide-react';
 
-const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['inbox', 'Messages', Inbox]];
+const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['inbox', 'Messages', Inbox], ['oauth', 'Google/FB', KeyRound]];
 
 export default function Admin({ params }) {
   const lang = params.lang;
@@ -23,6 +23,7 @@ export default function Admin({ params }) {
       if (t === 'clients') setData(await admin.users());
       if (t === 'cars') setData(await admin.cars());
       if (t === 'inbox') setData(await admin.inbox());
+      if (t === 'oauth') { await loadOauth(); setData({ oauth: true }); }
     } catch (e) {
       if ((e.message || '').includes('401')) { setAdminToken(null); setTok(null); }
       else setErr(e.message);
@@ -47,11 +48,25 @@ export default function Admin({ params }) {
     load('cars');
   };
   const [syncing, setSyncing] = useState(false);
+  const [oa, setOa] = useState({ google_client_id: '', facebook_app_id: '', fb_secret: '', fb_set: false });
   const syncPhotos = async () => {
     setSyncing(true);
     try { const r = await admin.seedImages(); alert('✅ ' + r.updated + ' photos mises à jour !'); load('cars'); }
     catch (e) { alert('❌ ' + e.message); }
     setSyncing(false);
+  };
+  const loadOauth = async () => {
+    try {
+      const r = await admin.oauthGet();
+      setOa({ google_client_id: r.settings.google_client_id || '', facebook_app_id: r.settings.facebook_app_id || '', fb_secret: '', fb_set: !!r.settings.facebook_app_secret_set });
+    } catch (e) { setErr(e.message); }
+  };
+  const saveOauth = async (e) => {
+    e.preventDefault();
+    const d = { google_client_id: oa.google_client_id, facebook_app_id: oa.facebook_app_id };
+    if (oa.fb_secret) d.facebook_app_secret = oa.fb_secret;
+    try { await admin.oauthSet(d); alert('✅ Clés enregistrées ! Boutons sociaux actifs.'); setOa({ ...oa, fb_secret: '', fb_set: true }); }
+    catch (ex) { alert('❌ ' + ex.message); }
   };
 
   if (!tok) return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 440 }}>
@@ -113,6 +128,17 @@ export default function Admin({ params }) {
         <td><input type="number" defaultValue={c.price} style={{ width: 90 }} onBlur={(e) => { if (+e.target.value !== c.price) setCar(c.slug, { price: +e.target.value }); }} /> DH</td>
         <td><input type="checkbox" defaultChecked={!!+c.active} onChange={(e) => setCar(c.slug, { active: e.target.checked ? 1 : 0 })} /></td></tr>)}</tbody></table></div>}
 
+    {tab === 'oauth' && data?.oauth && <div className="card" style={{ maxWidth: 640 }}>
+      <h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><KeyRound size={18} /> Connexion Google / Facebook</h3>
+      <p className="mut">Collez vos IDs ici (pas besoin File Manager). Google + Facebook gratuits. Sans clés → boutons affichent "bientôt", login email marche toujours.</p>
+      <form onSubmit={saveOauth} className="field" style={{ display: 'grid', gap: 10 }}>
+        <label>Google Client ID<input dir="ltr" value={oa.google_client_id} onChange={(e) => setOa({ ...oa, google_client_id: e.target.value })} placeholder="xxx.apps.googleusercontent.com" /></label>
+        <label>Facebook App ID<input dir="ltr" value={oa.facebook_app_id} onChange={(e) => setOa({ ...oa, facebook_app_id: e.target.value })} placeholder="123456…" /></label>
+        <label>Facebook App Secret {oa.fb_set && <small className="mut">(enregistré ✓ — laissez vide pour garder)</small>}<input dir="ltr" type="password" value={oa.fb_secret} onChange={(e) => setOa({ ...oa, fb_secret: e.target.value })} placeholder={oa.fb_set ? '••••••' : 'secret…'} /></label>
+        <button className="btn"><Save size={15} /> Enregistrer</button>
+      </form>
+      <p className="mut" style={{ marginTop: 10 }}>Google : console.cloud.google.com → Credentials → OAuth client (Web) → origin = votre domaine<br />Facebook : developers.facebook.com → App → Facebook Login → App Domains = même domaine</p>
+    </div>}
     {tab === 'inbox' && data?.messages && <div className="row">
       <div className="card"><h3>✉️ Contact ({data.messages.length})</h3>{data.messages.map((m) => <div key={m.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}><b>{m.name}</b> <small className="mut">{m.contact} • {m.created_at}</small><p className="mut">{m.message}</p></div>)}</div>
       <div className="card"><h3>🤝 Partenaires ({data.partners.length})</h3>{(data.partners || []).map((p) => <div key={p.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}><b>{p.agency}</b> <small className="mut">{p.city} • {p.phone} • {p.cars} voitures</small><p className="mut">{p.message}</p></div>)}</div>

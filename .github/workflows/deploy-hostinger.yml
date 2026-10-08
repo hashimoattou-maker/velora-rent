@@ -47,4 +47,4 @@ jobs:
           # Mirror site (delete only files actually present remotely — no phantom 550s)
           lftp -c "set ssl:verify-certificate no; set net:timeout 30; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; mirror -R --delete --parallel=5 --verbose=1 --exclude-glob .ftp-deploy-sync-state.json ./out/ $FTP_DIR; bye"
           # Mirror backend (never touch server secrets)
-          lftp -c "set ssl:verify-certificate no; set net:timeout 30; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; mirror -R --delete --parallel=5 --verbose=1 --exclude-glob .db.php --exclude-glob .admin.php --exclude-glob config.sample.php --exclude-glob .ftp-deploy-sync-state.json ./api/ ${FTP_DIR}api/; bye"
+          lftp -c "set ssl:verify-certificate no; set net:timeout 30; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; mirror -R --delete --parallel=5 --verbose=1 --exclude-glob .db.php --exclude-glob .admin.php --exclude-glob .oauth.php --exclude-glob config.sample.php --exclude-glob oauth.sample.php --exclude-glob .ftp-deploy-sync-state.json ./api/ ${FTP_DIR}api/; bye"
