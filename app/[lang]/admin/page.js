@@ -46,6 +46,13 @@ export default function Admin({ params }) {
     await admin.setCar(slug, patch);
     load('cars');
   };
+  const [syncing, setSyncing] = useState(false);
+  const syncPhotos = async () => {
+    setSyncing(true);
+    try { const r = await admin.seedImages(); alert('✅ ' + r.updated + ' photos mises à jour !'); load('cars'); }
+    catch (e) { alert('❌ ' + e.message); }
+    setSyncing(false);
+  };
 
   if (!tok) return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 440 }}>
     <div className="card"><h2 style={{ display: 'flex', gap: 10, alignItems: 'center' }}><Lock size={22} /> Admin Velora</h2><p className="mut">Clé secrète (fichier <code>api/.admin.php</code> sur serveur).</p>
@@ -96,7 +103,11 @@ export default function Admin({ params }) {
       <thead><tr><th>#</th><th>Nom</th><th>Email / Tél</th><th>Ville</th><th>Points</th><th>KYC</th></tr></thead>
       <tbody>{data.users.map((u) => <tr key={u.id}><td>{u.id}</td><td>{u.name}</td><td>{u.email}<br /><small className="mut">{u.phone}</small></td><td>{u.city}</td><td>{u.points}</td><td>{u.identity_verified ? '✅' : '—'}</td></tr>)}</tbody></table></div>}
 
-    {tab === 'cars' && data?.cars && <div className="card"><table className="table">
+    {tab === 'cars' && data?.cars && <div className="card">
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
+        <h3 style={{ margin: 0, marginInlineEnd: 'auto' }}>Voitures ({data.cars.length})</h3>
+        <button className="btn" onClick={syncPhotos} disabled={syncing}>{syncing ? '⏳ Sync…' : '🖼️ Sync vraies photos (12)'}</button>
+      </div><table className="table">
       <thead><tr><th>Voiture</th><th>Ville</th><th>Prix/j</th><th>Actif</th></tr></thead>
       <tbody>{data.cars.map((c) => <tr key={c.slug}><td>{c.brand} {c.model} ⭐{c.rating}</td><td>{c.city}</td>
         <td><input type="number" defaultValue={c.price} style={{ width: 90 }} onBlur={(e) => { if (+e.target.value !== c.price) setCar(c.slug, { price: +e.target.value }); }} /> DH</td>
