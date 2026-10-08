@@ -2,11 +2,12 @@
 import { Navbar, Footer } from '@/components/ui';
 import { dict } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
-import { LayoutDashboard, Trophy, ShieldCheck, Gift, Ticket, BadgeCheck } from 'lucide-react';
+import { LayoutDashboard, Trophy, ShieldCheck, Gift, Ticket, BadgeCheck, Building2 } from 'lucide-react';
 export default function Dashboard({ params }) {
   const lang = params.lang; const t = dict[lang]; const s = useStore() || {};
   return (<><Navbar lang={lang} /><div className="page">
     <h1><span className="ic"><LayoutDashboard size={22} /></span>{s.user?.name || 'Guest'}</h1>
+    {s.user?.role === 'company' && <div className="alert ok" style={{ marginBottom: 12 }}><Building2 size={16} /> {s.user?.agency || t.role_company} — {t.become}</div>}
     <div className="row">
       <div className="card card-h"><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><Trophy size={18} color="#b8860b" /> {t.loyalty_box}</h3><p style={{ fontSize: 34, fontWeight: 800, background: 'linear-gradient(90deg,#b8860b,#f59e0b)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{s.points} pts</p><p className="mut">1 DH = 1 pt • -15% dès 2000 pts</p></div>
       <div className="card card-h"><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><ShieldCheck size={18} /> {t.identity_box}</h3><p>{s.identity ? <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: '#059669', fontWeight: 700 }}><BadgeCheck size={16} />{t.verified}</span> : t.not_verified}</p>

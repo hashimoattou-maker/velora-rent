@@ -50,6 +50,16 @@ h1,h2,h3{letter-spacing:-.02em}
 .spec b{font-size:15px}
 .fav-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #e2e6f2;background:#fff;border-radius:14px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:14px;color:var(--ink)}
 .fav-btn.on{border-color:#f59e0b;background:#fffbeb;color:#b45309}
+/* auth (like Panda): type cards + social buttons */
+.type-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 4px}
+.type-card{background:#f8f9fd;border:2px solid #e6e9f2;border-radius:18px;padding:20px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:var(--ink2);font-family:inherit;transition:.2s}
+.type-card b{font-size:15px;color:var(--ink)}
+.type-card small{font-size:12.5px}
+.type-card.on{border-color:var(--ink);background:#fff;box-shadow:var(--ring)}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1.5px solid #e2e6f2;border-radius:14px;padding:13px;font-weight:700;font-size:14.5px;cursor:pointer;color:var(--ink);font-family:inherit;transition:.2s;width:100%}
+.social-btn:hover{border-color:var(--pri);box-shadow:var(--ring)}
+.divider{display:flex;align-items:center;gap:12px;color:#9aa3b8;font-size:13px;margin:16px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e6e9f2}
 
 /* ---------- Buttons ---------- */
 .btn{background:var(--grad);color:#fff;border:0;padding:11px 22px;border-radius:999px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px #7c3aed99;transition:.22s;font-size:14.5px}

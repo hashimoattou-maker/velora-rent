@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS users (
   pass_hash VARCHAR(255) NOT NULL,
   points INT NOT NULL DEFAULT 0,
   identity_verified TINYINT(1) NOT NULL DEFAULT 0,
+  role ENUM('client','company') DEFAULT 'client',
+  agency VARCHAR(150) DEFAULT '',
+  avatar TEXT DEFAULT '',
+  provider VARCHAR(20) DEFAULT 'email',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -6,4 +6,5 @@ out/
 Thumbs.db
 api/.db.php
 api/admin/.admin.php
+api/auth/.oauth.php
 $log

@@ -39,6 +39,15 @@ return ['key' => 'BADAL_HADI_B KELMA_SERIa_TWILA'];
 2. Ouvrez `https://domaine.com/fr/admin` → entrez la clé → stats, réservations (changer statut paid/pending/cancelled), clients, prix/activation voitures, messages + candidatures partenaires.
 3. La clé reste sur le serveur uniquement (jamais dans Git). Tokens admin : 24h, stockés en session navigateur.
 
+## Login social (Google / Facebook / Apple)
+
+1. **Google (FREE)** : console.cloud.google.com → Credentials → OAuth client ID (Web) → Authorized JavaScript origins: `https://domaine.com` → copiez le Client ID
+2. **Facebook (FREE)** : developers.facebook.com → Create App → Facebook Login → App Domains: `domaine.com` → copiez App ID + Secret
+3. **Apple** : compte développeur payant ($99/an) — pas encore câblé, bouton affiche "bientôt"
+4. File Manager → `public_html/api/auth/` → créez `.oauth.php` (modèle: `api/auth/oauth.sample.php`) avec vos IDs
+5. Les boutons s'activent seuls. Sans config → message "bientôt disponible", login email marche toujours.
+6. Comptes sociaux créés avec `provider=google/facebook`, mot de passe vide, +350 pts bienvenue.
+
 ## Déployer sur Hostinger (Shared)
 1. `npm run build` → dossier `out/` généré
 2. Hostinger → hPanel → File Manager → `public_html` : uploadez **le contenu de `out/`** + dossier **`api/`** (avec `.htaccess` inclus)
