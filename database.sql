@@ -34,7 +34,10 @@ CREATE TABLE IF NOT EXISTS companies (
   cars INT DEFAULT 0,
   rating DECIMAL(2,1) DEFAULT 4.5,
   phone VARCHAR(40) DEFAULT '',
-  img TEXT
+  img TEXT,
+  address VARCHAR(255) DEFAULT '',
+  lat DECIMAL(10,7) NULL,
+  lng DECIMAL(10,7) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS cars (
@@ -103,6 +106,7 @@ CREATE TABLE IF NOT EXISTS partner_apps (
   city VARCHAR(80) DEFAULT '',
   phone VARCHAR(40) DEFAULT '',
   cars INT DEFAULT 0,
+  address VARCHAR(255) DEFAULT '',
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -116,11 +120,11 @@ CREATE TABLE IF NOT EXISTS admin_tokens (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ---------------- Seed: companies ----------------
-INSERT INTO companies (name, city, cars, rating, phone, img) VALUES
-('Atlas Drive','Casablanca',48,4.7,'+212 6 61 00 00 01','https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600'),
-('Sahara Cars','Marrakech',36,4.8,'+212 6 61 00 00 02','https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600'),
-('Velora Premium','Casablanca',22,5.0,'+212 6 61 00 00 03','https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600'),
-('Nord Auto','Tanger',29,4.6,'+212 6 61 00 00 04','https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600');
+INSERT INTO companies (name, city, cars, rating, phone, img, address, lat, lng) VALUES
+('Atlas Drive','Casablanca',48,4.7,'+212 6 61 00 00 01','https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600','Bd Anfa, Casablanca',33.5731,-7.5898),
+('Sahara Cars','Marrakech',36,4.8,'+212 6 61 00 00 02','https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600','Av. Mohammed V, Marrakech',31.6295,-7.9811),
+('Velora Premium','Casablanca',22,5.0,'+212 6 61 00 00 03','https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600','Corniche Ain Diab, Casablanca',33.5880,-7.6110),
+('Nord Auto','Tanger',29,4.6,'+212 6 61 00 00 04','https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600','Av. Mohammed VI, Tanger',35.7595,-5.8340');
 
 -- ---------------- Seed: cars ----------------
 INSERT INTO cars (slug, brand, model, year, type, price, seats, gear, fuel, rating, trips, city, company, img, tags) VALUES
