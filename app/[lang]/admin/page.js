@@ -49,7 +49,7 @@ export default function Admin({ params }) {
     load('cars');
   };
   const [syncing, setSyncing] = useState(false);
-  const [oa, setOa] = useState({ google_client_id: '', facebook_app_id: '', fb_secret: '', fb_set: false });
+  const [oa, setOa] = useState({ google_client_id: '', facebook_app_id: '', fb_secret: '', fb_set: false, smtp_host: '', smtp_port: '587', smtp_user: '', smtp_from: '', smtp_set: false, smtp_pass: '' });
   const syncPhotos = async () => {
     setSyncing(true);
     try { const r = await admin.seedImages(); alert('✅ ' + r.updated + ' photos mises à jour !'); load('cars'); }
@@ -59,14 +59,16 @@ export default function Admin({ params }) {
   const loadOauth = async () => {
     try {
       const r = await admin.oauthGet();
-      setOa({ google_client_id: r.settings.google_client_id || '', facebook_app_id: r.settings.facebook_app_id || '', fb_secret: '', fb_set: !!r.settings.facebook_app_secret_set });
+      const s = r.settings || {};
+      setOa({ google_client_id: s.google_client_id || '', facebook_app_id: s.facebook_app_id || '', fb_secret: '', fb_set: !!s.facebook_app_secret_set, smtp_host: s.smtp_host || '', smtp_port: s.smtp_port || '587', smtp_user: s.smtp_user || '', smtp_from: s.smtp_from || '', smtp_set: !!s.smtp_pass_set, smtp_pass: '' });
     } catch (e) { setErr(e.message); }
   };
   const saveOauth = async (e) => {
     e.preventDefault();
-    const d = { google_client_id: oa.google_client_id, facebook_app_id: oa.facebook_app_id };
+    const d = { google_client_id: oa.google_client_id, facebook_app_id: oa.facebook_app_id, smtp_host: oa.smtp_host, smtp_port: oa.smtp_port, smtp_user: oa.smtp_user, smtp_from: oa.smtp_from };
     if (oa.fb_secret) d.facebook_app_secret = oa.fb_secret;
-    try { await admin.oauthSet(d); alert('✅ Clés enregistrées ! Boutons sociaux actifs.'); setOa({ ...oa, fb_secret: '', fb_set: true }); }
+    if (oa.smtp_pass) d.smtp_pass = oa.smtp_pass;
+    try { await admin.oauthSet(d); alert('✅ Enregistré !'); setOa({ ...oa, fb_secret: '', fb_set: oa.fb_set || !!oa.fb_secret, smtp_pass: '', smtp_set: oa.smtp_set || !!oa.smtp_pass }); }
     catch (ex) { alert('❌ ' + ex.message); }
   };
 
@@ -141,6 +143,17 @@ export default function Admin({ params }) {
         <label>Google Client ID<input dir="ltr" value={oa.google_client_id} onChange={(e) => setOa({ ...oa, google_client_id: e.target.value })} placeholder="xxx.apps.googleusercontent.com" /></label>
         <label>Facebook App ID<input dir="ltr" value={oa.facebook_app_id} onChange={(e) => setOa({ ...oa, facebook_app_id: e.target.value })} placeholder="123456…" /></label>
         <label>Facebook App Secret {oa.fb_set && <small className="mut">(enregistré ✓ — laissez vide pour garder)</small>}<input dir="ltr" type="password" value={oa.fb_secret} onChange={(e) => setOa({ ...oa, fb_secret: e.target.value })} placeholder={oa.fb_set ? '••••••' : 'secret…'} /></label>
+      <h3 style={{ marginTop: 18 }}>📧 Email SMTP (codes OTP)</h3>
+      <p className="mut">Sans SMTP, Gmail refuse les codes. Gratuit : <b>Brevo</b> (300 emails/jour) → SMTP : <code>smtp-relay.brevo.com:587</code>. Ou boîte Hostinger : <code>smtp.hostinger.com:465</code>.</p>
+      <div className="field" style={{ display: 'grid', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 10 }}>
+          <label>SMTP host<input dir="ltr" value={oa.smtp_host} onChange={(e) => setOa({ ...oa, smtp_host: e.target.value })} placeholder="smtp-relay.brevo.com" /></label>
+          <label>Port<input dir="ltr" value={oa.smtp_port} onChange={(e) => setOa({ ...oa, smtp_port: e.target.value })} placeholder="587" /></label>
+        </div>
+        <label>SMTP user<input dir="ltr" value={oa.smtp_user} onChange={(e) => setOa({ ...oa, smtp_user: e.target.value })} /></label>
+        <label>SMTP password {oa.smtp_set && <small className="mut">(enregistré ✓)</small>}<input dir="ltr" type="password" value={oa.smtp_pass} onChange={(e) => setOa({ ...oa, smtp_pass: e.target.value })} placeholder={oa.smtp_set ? '••••••' : 'password…'} /></label>
+        <label>From (expéditeur)<input dir="ltr" value={oa.smtp_from} onChange={(e) => setOa({ ...oa, smtp_from: e.target.value })} placeholder="Velora Rent <contact@votre-domaine>" /></label>
+        </div>
         <button className="btn"><Save size={15} /> Enregistrer</button>
       </form>
       <p className="mut" style={{ marginTop: 10 }}>Google : console.cloud.google.com → Credentials → OAuth client (Web) → origin = votre domaine<br />Facebook : developers.facebook.com → App → Facebook Login → App Domains = même domaine</p>

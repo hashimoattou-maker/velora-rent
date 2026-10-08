@@ -1,6 +1,7 @@
 <?php
 // Send 6-digit email verification code (10 min expiry, 1/min rate limit). Uses PHP mail().
 require __DIR__ . '/../config.php';
+require __DIR__ . '/../lib/mailer.php';
 vr_require_method('POST');
 $pdo = vr_db();
 $b = vr_body();
@@ -27,6 +28,6 @@ $body = '<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;bo
   . '<div style="font-size:42px;font-weight:900;letter-spacing:12px;color:#4f46e5">' . $code . '</div>'
   . '<p style="color:#888">صالح لمدة 10 دقائق • Valable 10 minutes</p></div>';
 $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=UTF-8\r\nFrom: $from\r\n";
-$sent = @mail($email, $subject, $body, $headers);
+$sent = vr_send_mail($email, $subject, $body);
 if (!$sent) vr_fail('mail_failed', 500);
 vr_ok(['sent' => true]);
