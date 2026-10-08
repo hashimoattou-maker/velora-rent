@@ -13,7 +13,7 @@ export default function Partner({ params }) {
     setOk(true);
   };
   return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 600 }}><div className="card">
-    <h1><span className="ic"><Handshake size={22} /></span>{t.become}</h1><p className="mut">Publiez vos voitures, recevez des réservations, dashboard + paiements CMI inclus.</p>
+    <h1><span className="ic"><Handshake size={22} /></span>{t.become}</h1><p className="mut">{t.become_sub}</p>
     {ok ? <div className="alert ok"><CheckCircle2 size={17} /> Demande reçue ! On vous appelle sous 24h.</div> :
     <form className="field" style={{ display: 'grid', gap: 10 }} onSubmit={send}>
       <input required name="a" placeholder="Nom agence *" /><input required name="v" placeholder="Ville *" /><input required name="p" placeholder="Téléphone *" /><input required name="n" type="number" placeholder="Nombre voitures *" /><textarea name="m" placeholder="Message" rows={3} /><button className="btn"><Send size={15} /> Envoyer ma candidature</button>

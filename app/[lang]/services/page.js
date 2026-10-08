@@ -9,7 +9,7 @@ export default function Services({ params }) {
   return (<><Navbar lang={lang} /><div className="page"><h1><span className="ic"><Sparkles size={22} /></span>{t.services_title}</h1><p className="mut">{t.services_sub}</p>
     <div className="svc-grid">{t.svcs.map((s) => {
       const I = icons[s.slug] || Zap;
-      return <Link key={s.slug} href={`/${lang}/services/${s.slug}`} className="svc"><span className="sic"><I size={22} /></span><b>{s.t}</b><p className="mut">{s.d}</p><span style={{ display: 'inline-flex', gap: 5, alignItems: 'center', color: '#6d28d9', fontWeight: 700, fontSize: 13 }}>Découvrir <ArrowRight size={14} /></span></Link>;
+      return <Link key={s.slug} href={`/${lang}/services/${s.slug}`} className="svc"><span className="sic"><I size={22} /></span><b>{s.t}</b><p className="mut">{s.d}</p><span style={{ display: 'inline-flex', gap: 5, alignItems: 'center', color: '#6d28d9', fontWeight: 700, fontSize: 13 }}>{t.details} <ArrowRight size={14} /></span></Link>;
     })}</div>
   </div><Footer lang={lang} /></>);
 }

@@ -26,7 +26,7 @@ function Inner({ lang }) {
       <label>{t.auth.email}<input required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@mail.com" /></label>
       <label>{t.auth.pass}<input required type="password" value={pass} onChange={(e) => setPass(e.target.value)} /></label>
       <button className="btn"><LogIn size={15} /> {t.auth.go}</button></form>
-    <p><Link href={`/${lang}/forgot`}>Mot de passe oublié ?</Link></p>
+    <p><Link href={`/${lang}/forgot`}>{t.forgot_t}</Link></p>
     <p><Link href={`/${lang}/register`}>{t.auth.nohave}</Link></p></div></div>);
 }
 export default function Login({ params }) {

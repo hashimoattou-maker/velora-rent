@@ -25,8 +25,31 @@ h1,h2,h3{letter-spacing:-.02em}
 .logo .mark{width:34px;height:34px;border-radius:11px;background:var(--grad);display:grid;place-items:center;box-shadow:0 8px 20px -6px #7c3aed88}
 .logo em{font-style:normal;background:linear-gradient(90deg,#a5b4fc,#e9d5ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 .links{display:flex;gap:16px;margin-inline-start:auto;flex-wrap:wrap;font-size:14px;align-items:center}
-.links a{opacity:1;color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.2s;text-shadow:0 1px 2px #00000055}
-.links a:hover{color:#d9ccff}
+.nlink{opacity:1;color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.2s;text-shadow:0 1px 2px #00000055;padding:8px 10px;border-radius:10px}
+.nlink:hover{color:#d9ccff;background:#ffffff10}
+.nlink.on{color:#fff;background:#ffffff18}
+.btn.sm{padding:9px 16px;font-size:13.5px}
+.btn.full,.btn-light.full{width:100%;justify-content:center}
+.mob-bar{display:none;margin-inline-start:auto;align-items:center;gap:10px}
+.menu-btn{background:#ffffff14;border:1px solid #ffffff2c;color:#fff;border-radius:12px;width:44px;height:44px;display:grid;place-items:center;cursor:pointer}
+.mob-panel{display:none}
+/* bottom tab bar (mobile, like Panda) */
+.bottombar{display:none}
+
+/* category pills (like Panda) */
+.pills{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex:none;border:1.5px solid #e2e6f2;background:#fff;color:var(--ink2);font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:999px;cursor:pointer;font-family:inherit}
+.pill.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* spec cards (car detail, like Panda) */
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.spec{background:#f8f9fd;border:1px solid #e9ecf5;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center}
+.spec .sic{width:42px;height:42px;border-radius:13px;background:var(--grad-soft);border:1px solid #e2d9fd;display:grid;place-items:center;color:#6d28d9;flex:none}
+.spec small{display:block;color:#68718f;font-size:12px}
+.spec b{font-size:15px}
+.fav-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #e2e6f2;background:#fff;border-radius:14px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:14px;color:var(--ink)}
+.fav-btn.on{border-color:#f59e0b;background:#fffbeb;color:#b45309}
 
 /* ---------- Buttons ---------- */
 .btn{background:var(--grad);color:#fff;border:0;padding:11px 22px;border-radius:999px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px #7c3aed99;transition:.22s;font-size:14.5px}
@@ -102,4 +125,21 @@ img{max-width:100%}
 details.card summary{cursor:pointer;font-weight:700}
 details.card summary::marker{color:var(--pri)}
 [dir="rtl"] .hero h1{letter-spacing:0}
-@media(max-width:920px){.hero{grid-template-columns:1fr}.hero h1{font-size:37px}.search{grid-template-columns:1fr 1fr}.footer .in{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+@media(max-width:920px){
+  .hero{grid-template-columns:1fr}.hero h1{font-size:37px}
+  .search{grid-template-columns:1fr}
+  .search .btn{width:100%;justify-content:center}
+  .footer .in{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}
+  .links.desk{display:none}
+  .mob-bar{display:flex}
+  .mob-panel{display:grid;gap:4px;padding:6px 16px 16px;background:rgba(13,18,43,.97)}
+  .mob-panel .btn,.mob-panel .btn-light{margin-top:6px}
+  .bottombar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid #e6e9f2;padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+  .bottombar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#8a90a8;font-size:11px;font-weight:700;padding:4px 2px;border-radius:12px}
+  .bottombar a.on{color:var(--pri)}
+  .bottombar small{font-size:10.5px}
+  body{padding-bottom:72px}
+  .specs{grid-template-columns:repeat(2,1fr)}
+  .page h1{font-size:26px}
+  .section h2{font-size:24px}
+}
