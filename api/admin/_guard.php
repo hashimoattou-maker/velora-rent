@@ -6,9 +6,14 @@ function vr_admin_key() {
   $k = getenv('VR_ADMIN_KEY') ?: '';
   $f = __DIR__ . '/.admin.php';
   if (file_exists($f)) {
-    $c = include $f;
-    if (is_array($c)) $k = $c['key'] ?? $k;
-    elseif (is_string($c)) $k = $c;
+    if (function_exists('vr_parse_php_array')) {
+      $c = vr_parse_php_array($f, ['key']);
+      if (!empty($c['key'])) return $c['key'];
+    } else {
+      $c = include $f;
+      if (is_array($c)) $k = $c['key'] ?? $k;
+      elseif (is_string($c)) $k = $c;
+    }
   }
   return $k;
 }

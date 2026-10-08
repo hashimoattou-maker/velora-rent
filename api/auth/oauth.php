@@ -18,8 +18,13 @@ function vr_oauth_cfg() {
   } catch (Exception $e) {}
   $f = __DIR__ . '/.oauth.php';
   if (file_exists($f)) {
-    $o = include $f;
-    if (is_array($o)) foreach ($o as $k => $v) if (isset($c[$k]) && $v !== '') $c[$k] = $v;
+    if (function_exists('vr_parse_php_array')) {
+      $o = vr_parse_php_array($f, ['google_client_id', 'facebook_app_id', 'facebook_app_secret']);
+      if (is_array($o)) foreach ($o as $k => $v) if (isset($c[$k]) && $v !== '') $c[$k] = $v;
+    } else {
+      $o = include $f;
+      if (is_array($o)) foreach ($o as $k => $v) if (isset($c[$k]) && $v !== '') $c[$k] = $v;
+    }
   }
   return $c;
 }

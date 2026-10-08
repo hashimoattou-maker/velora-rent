@@ -3,18 +3,28 @@
 header('Content-Type: application/json; charset=utf-8');
 
 // --- DB credentials: api/.db.php on server (NEVER in git) or env vars ---
+// Loaded with a tolerant regex parser (no fatal on syntax errors like quotes in passwords).
+function vr_parse_php_array($file, $keys) {
+  $txt = @file_get_contents($file);
+  if (!$txt) return null;
+  $out = [];
+  foreach ($keys as $k) {
+    if (preg_match("/['\"]" . preg_quote($k, '/') . "['\"]\s*=>\s*'((?:[^'\\\\]|\\\\.)*)'/s", $txt, $m)) $out[$k] = stripcslashes($m[1]);
+    elseif (preg_match('/["\']' . preg_quote($k, '/') . '["\']\s*=>\s*"((?:[^"\\\\]|\\\\.)*)"/s', $txt, $m)) $out[$k] = stripcslashes($m[1]);
+  }
+  return $out;
+}
 $DB_HOST = getenv('VR_DB_HOST') ?: 'localhost';
 $DB_NAME = getenv('VR_DB_NAME') ?: '';
 $DB_USER = getenv('VR_DB_USER') ?: '';
 $DB_PASS = getenv('VR_DB_PASS') ?: '';
 $local = __DIR__ . '/.db.php';
 if (file_exists($local)) {
-  $c = include $local;
+  $c = vr_parse_php_array($local, ['host', 'name', 'user', 'pass']);
   if (is_array($c)) {
-    $DB_HOST = $c['host'] ?? $DB_HOST;
-    $DB_NAME = $c['name'] ?? $DB_NAME;
-    $DB_USER = $c['user'] ?? $DB_USER;
-    $DB_PASS = $c['pass'] ?? $DB_PASS;
+    foreach (['host' => 'DB_HOST', 'name' => 'DB_NAME', 'user' => 'DB_USER', 'pass' => 'DB_PASS'] as $k => $g) {
+      if (!empty($c[$k])) $$g = $c[$k];
+    }
   }
 }
 
