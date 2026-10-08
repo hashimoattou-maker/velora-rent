@@ -124,18 +124,18 @@ INSERT INTO companies (name, city, cars, rating, phone, img) VALUES
 
 -- ---------------- Seed: cars ----------------
 INSERT INTO cars (slug, brand, model, year, type, price, seats, gear, fuel, rating, trips, city, company, img, tags) VALUES
-('dacia-logan','Dacia','Logan',2023,'Berline',250,5,'Manuelle','Diesel',4.6,312,'Casablanca','Atlas Drive','https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800','Eco,Top vente'),
-('dacia-duster','Dacia','Duster 4x4',2024,'SUV',380,5,'Manuelle','Diesel',4.8,198,'Marrakech','Sahara Cars','https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800','SUV,Désert'),
-('clio-5','Renault','Clio 5',2023,'Citadine',280,5,'Manuelle','Essence',4.7,421,'Rabat','Atlas Drive','https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800','Ville'),
-('peugeot-208','Peugeot','208 GT-Line',2024,'Citadine',320,5,'Auto','Essence',4.9,156,'Casablanca','Velora Premium','https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800','Premium'),
-('golf-8','Volkswagen','Golf 8',2023,'Berline',450,5,'Auto','Diesel',4.8,203,'Tanger','Nord Auto','https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800','Confort'),
-('tucson','Hyundai','Tucson',2024,'SUV',550,5,'Auto','Hybride',4.9,132,'Agadir','Sahara Cars','https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800','Famille'),
-('mercedes-c','Mercedes','Classe C',2024,'Luxe',950,5,'Auto','Essence',5.0,87,'Casablanca','Velora Premium','https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800','Luxe,Chauffeur'),
-('range-evoque','Range Rover','Evoque',2023,'Luxe',1100,5,'Auto','Diesel',4.9,64,'Marrakech','Velora Premium','https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?w=800','Luxe'),
-('toyota-hiace','Toyota','Hiace 9pl',2022,'Van',700,9,'Manuelle','Diesel',4.5,143,'Fès','Atlas Drive','https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=800','Groupe'),
-('tesla-3','Tesla','Model 3',2024,'Électrique',800,5,'Auto','Électrique',4.9,98,'Rabat','Nord Auto','https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800','Éco,Électrique'),
-('kia-picanto','Kia','Picanto',2023,'Citadine',220,5,'Manuelle','Essence',4.4,287,'Essaouira','Sahara Cars','https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800','Budget'),
-('bmw-x3','BMW','X3 xDrive',2024,'SUV',890,5,'Auto','Diesel',4.9,76,'Casablanca','Velora Premium','https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=800','Premium');
+('dacia-logan','Dacia','Logan',2023,'Berline',250,5,'Manuelle','Diesel',4.6,312,'Casablanca','Atlas Drive','https://upload.wikimedia.org/wikipedia/commons/0/02/2021_Dacia_Logan_III_%28rear%29.jpg','Eco,Top vente'),
+('dacia-duster','Dacia','Duster 4x4',2024,'SUV',380,5,'Manuelle','Diesel',4.8,198,'Marrakech','Sahara Cars','https://unsplash.com/photos/1EFn8clp5Do/download?w=900&q=80','SUV,Désert'),
+('clio-5','Renault','Clio 5',2023,'Citadine',280,5,'Manuelle','Essence',4.7,421,'Rabat','Atlas Drive','https://unsplash.com/photos/lIxbWUJIxko/download?w=900&q=80','Ville'),
+('peugeot-208','Peugeot','208 GT-Line',2024,'Citadine',320,5,'Auto','Essence',4.9,156,'Casablanca','Velora Premium','https://unsplash.com/photos/1NwpPHILCFM/download?w=900&q=80','Premium'),
+('golf-8','Volkswagen','Golf 8',2023,'Berline',450,5,'Auto','Diesel',4.8,203,'Tanger','Nord Auto','https://unsplash.com/photos/wWZIm8vleB0/download?w=900&q=80','Confort'),
+('tucson','Hyundai','Tucson',2024,'SUV',550,5,'Auto','Hybride',4.9,132,'Agadir','Sahara Cars','https://unsplash.com/photos/9TUHjKs81I8/download?w=900&q=80','Famille'),
+('mercedes-c','Mercedes','Classe C',2024,'Luxe',950,5,'Auto','Essence',5.0,87,'Casablanca','Velora Premium','https://unsplash.com/photos/L0Y0YSmqiKM/download?w=900&q=80','Luxe,Chauffeur'),
+('range-evoque','Range Rover','Evoque',2023,'Luxe',1100,5,'Auto','Diesel',4.9,64,'Marrakech','Velora Premium','https://unsplash.com/photos/soJS_Ce49AI/download?w=900&q=80','Luxe'),
+('toyota-hiace','Toyota','Hiace 9pl',2022,'Van',700,9,'Manuelle','Diesel',4.5,143,'Fès','Atlas Drive','https://unsplash.com/photos/eEG5zGeftB8/download?w=900&q=80','Groupe'),
+('tesla-3','Tesla','Model 3',2024,'Électrique',800,5,'Auto','Électrique',4.9,98,'Rabat','Nord Auto','https://unsplash.com/photos/L1_XWJ_bRSM/download?w=900&q=80','Éco,Électrique'),
+('kia-picanto','Kia','Picanto',2023,'Citadine',220,5,'Manuelle','Essence',4.4,287,'Essaouira','Sahara Cars','https://unsplash.com/photos/lb4Ed7w7PJo/download?w=900&q=80','Budget'),
+('bmw-x3','BMW','X3 xDrive',2024,'SUV',890,5,'Auto','Diesel',4.9,76,'Casablanca','Velora Premium','https://unsplash.com/photos/c8BqSLr5xQg/download?w=900&q=80','Premium');
 
 -- ---------------- Seed: reviews ----------------
 INSERT INTO reviews (name, rating, text) VALUES
