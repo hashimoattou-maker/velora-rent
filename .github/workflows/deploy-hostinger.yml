@@ -33,33 +33,18 @@ jobs:
           npm run build
           ls out | head -20
 
-      - name: Deploy site (out/) to Hostinger via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
-          protocol: ftp
-          local-dir: ./out/
-          server-dir: ${{ secrets.FTP_DIR }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-
-      - name: Deploy backend (api/) to Hostinger via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
-          protocol: ftp
-          local-dir: ./api/
-          server-dir: ${{ secrets.FTP_DIR }}api/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .db.php
-            config.sample.php
+      - name: Deploy site + backend via lftp mirror
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_DIR: ${{ secrets.FTP_DIR }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          # Drop legacy sync-state files from previous deploy action (avoid stale deletes)
+          lftp -c "set net:timeout 20; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; rm -f ${FTP_DIR}.ftp-deploy-sync-state.json ${FTP_DIR}api/.ftp-deploy-sync-state.json; bye" || true
+          # Mirror site (delete only files actually present remotely — no phantom 550s)
+          lftp -c "set net:timeout 30; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; mirror -R --delete --parallel=5 --verbose=1 --exclude-glob .ftp-deploy-sync-state.json ./out/ $FTP_DIR; bye"
+          # Mirror backend (never touch server secrets)
+          lftp -c "set net:timeout 30; open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST; mirror -R --delete --parallel=5 --verbose=1 --exclude-glob .db.php --exclude-glob .admin.php --exclude-glob config.sample.php --exclude-glob .ftp-deploy-sync-state.json ./api/ ${FTP_DIR}api/; bye"
