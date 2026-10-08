@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS users (
   avatar TEXT DEFAULT '',
   provider VARCHAR(20) DEFAULT 'email',
   email_verified TINYINT(1) NOT NULL DEFAULT 0,
+  id_front TEXT DEFAULT '',
+  id_back TEXT DEFAULT '',
+  license_img TEXT DEFAULT '',
+  identity_status ENUM('none','pending','verified','rejected') DEFAULT 'none',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

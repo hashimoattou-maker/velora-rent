@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { Navbar, Footer } from '@/components/ui';
 import { admin, getAdminToken, setAdminToken } from '@/lib/api';
-import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp, KeyRound, Save } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp, KeyRound, Save, IdCard, Check, X } from 'lucide-react';
 
-const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['inbox', 'Messages', Inbox], ['oauth', 'Google/FB', KeyRound]];
+const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['kyc', 'KYC', IdCard], ['inbox', 'Messages', Inbox], ['oauth', 'Google/FB', KeyRound]];
 
 export default function Admin({ params }) {
   const lang = params.lang;
@@ -23,6 +23,7 @@ export default function Admin({ params }) {
       if (t === 'clients') setData(await admin.users());
       if (t === 'cars') setData(await admin.cars());
       if (t === 'inbox') setData(await admin.inbox());
+      if (t === 'kyc') setData(await admin.kycList());
       if (t === 'oauth') { await loadOauth(); setData({ oauth: true }); }
     } catch (e) {
       if ((e.message || '').includes('401')) { setAdminToken(null); setTok(null); }
@@ -67,6 +68,11 @@ export default function Admin({ params }) {
     if (oa.fb_secret) d.facebook_app_secret = oa.fb_secret;
     try { await admin.oauthSet(d); alert('✅ Clés enregistrées ! Boutons sociaux actifs.'); setOa({ ...oa, fb_secret: '', fb_set: true }); }
     catch (ex) { alert('❌ ' + ex.message); }
+  };
+
+  const setKyc = async (id, status) => {
+    await admin.kycSet(id, status);
+    load('kyc');
   };
 
   if (!tok) return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 440 }}>
@@ -139,6 +145,24 @@ export default function Admin({ params }) {
       </form>
       <p className="mut" style={{ marginTop: 10 }}>Google : console.cloud.google.com → Credentials → OAuth client (Web) → origin = votre domaine<br />Facebook : developers.facebook.com → App → Facebook Login → App Domains = même domaine</p>
     </div>}
+    {tab === 'kyc' && data?.kyc && <div className="card"><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><IdCard size={18} /> Vérifications ({data.kyc.length})</h3>
+      {data.kyc.length === 0 && <p className="mut">Aucune demande.</p>}
+      {data.kyc.map((k) => <div key={k.id} style={{ borderBottom: '1px solid #eee', padding: '12px 0' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <b>{k.name}</b><small className="mut">{k.email} • {k.phone}</small>
+          <span className="tag">{k.identity_status}</span>
+          <span style={{ marginInlineStart: 'auto', display: 'flex', gap: 6 }}>
+            <button className="btn sm" onClick={() => setKyc(k.id, 'verified')}><Check size={14} /> Approuver</button>
+            <button className="btn-light sm" onClick={() => setKyc(k.id, 'rejected')}><X size={14} /> Refuser</button>
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {[['CIN recto', k.id_front], ['CIN verso', k.id_back], ['Permis', k.license_img]].map(([l, p], i) => p ? (
+            <a key={i} href={'/' + p} target="_blank" rel="noreferrer"><img src={'/' + p} alt={l} title={l} style={{ width: 110, height: 70, objectFit: 'cover', borderRadius: 10, border: '1px solid #e2e6f2' }} /></a>
+          ) : null)}
+        </div>
+      </div>)}</div>}
+
     {tab === 'inbox' && data?.messages && <div className="row">
       <div className="card"><h3>✉️ Contact ({data.messages.length})</h3>{data.messages.map((m) => <div key={m.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}><b>{m.name}</b> <small className="mut">{m.contact} • {m.created_at}</small><p className="mut">{m.message}</p></div>)}</div>
       <div className="card"><h3>🤝 Partenaires ({data.partners.length})</h3>{(data.partners || []).map((p) => <div key={p.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}><b>{p.agency}</b> <small className="mut">{p.city} • {p.phone} • {p.cars} voitures</small><p className="mut">{p.message}</p></div>)}</div>

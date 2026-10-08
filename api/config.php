@@ -72,7 +72,10 @@ function vr_issue_token($pdo, $uid) {
   return $tok;
 }
 function vr_public_user($u) {
+  $verified = !empty($u['identity_verified']) || (($u['identity_status'] ?? '') === 'verified');
   return ['id' => (int)$u['id'], 'name' => $u['name'], 'email' => $u['email'], 'phone' => $u['phone'],
-    'city' => $u['city'], 'points' => (int)$u['points'], 'identity_verified' => (bool)$u['identity_verified'],
+    'city' => $u['city'], 'points' => (int)$u['points'], 'identity_verified' => $verified,
+    'identity_status' => $u['identity_status'] ?? ($verified ? 'verified' : 'none'),
+    'docs' => ['front' => $u['id_front'] ?? '', 'back' => $u['id_back'] ?? '', 'license' => $u['license_img'] ?? ''],
     'role' => $u['role'] ?? 'client', 'agency' => $u['agency'] ?? '', 'avatar' => $u['avatar'] ?? ''];
 }

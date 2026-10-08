@@ -1,8 +1,49 @@
 'use client';
+import { useState } from 'react';
 import { Navbar, Footer } from '@/components/ui';
 import { dict } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
-import { LayoutDashboard, Trophy, ShieldCheck, Gift, Ticket, BadgeCheck, Building2 } from 'lucide-react';
+import { api } from '@/lib/api';
+import { LayoutDashboard, Trophy, ShieldCheck, Gift, Ticket, BadgeCheck, Building2, UploadCloud, Clock, XCircle } from 'lucide-react';
+
+function KycCard({ t, s }) {
+  const [busy, setBusy] = useState(null);
+  const status = s.kycStatus || (s.identity ? 'verified' : 'none');
+  const docs = s.kycDocs || {};
+  const up = async (type, file) => {
+    if (!file) return;
+    setBusy(type);
+    try { await api.kycUpload(type, file); await s.refreshServer(); }
+    catch (e) { alert(e.message); }
+    setBusy(null);
+  };
+  const boxes = [['front', t.kyc_front], ['back', t.kyc_back], ['license', t.kyc_lic]];
+  return (
+    <div className="card card-h">
+      <h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><ShieldCheck size={18} /> {t.identity_box}</h3>
+      {status === 'verified' && <p style={{ color: '#059669', fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><BadgeCheck size={16} />{t.verified}</p>}
+      {status === 'pending' && <p style={{ color: '#b45309', fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Clock size={16} />{t.kyc_pending}</p>}
+      {status === 'rejected' && <div className="alert err"><XCircle size={16} /> {t.kyc_rejected}</div>}
+      {(status === 'none' || status === 'rejected') && (<>
+        <p className="mut">{t.kyc_hint}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+          {boxes.map(([k, label]) => (
+            <label key={k} style={{ border: '1.5px dashed #c9cfE2', borderRadius: 14, padding: 10, textAlign: 'center', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+              {docs[k] ? <img src={'/' + docs[k]} alt={label} style={{ width: '100%', height: 70, objectFit: 'cover', borderRadius: 8 }} /> : <UploadCloud size={22} color="#6d28d9" />}
+              <div style={{ marginTop: 4 }}>{busy === k ? '…' : label}</div>
+              {docs[k] && <small style={{ color: '#059669' }}>✓</small>}
+              <input type="file" accept="image/*" hidden onChange={(e) => up(k, e.target.files[0])} />
+            </label>
+          ))}
+        </div>
+        <button className="btn" style={{ marginTop: 10 }} disabled={!docs.front || !docs.back || !docs.license}
+          onClick={() => s.verifyIdentity().then(() => s.refreshServer()).catch((e) => alert(e.message === 'docs_missing' ? t.kyc_need : e.message))}>
+          <ShieldCheck size={15} /> {t.kyc_submit}
+        </button>
+      </>)}
+    </div>
+  );
+}
 export default function Dashboard({ params }) {
   const lang = params.lang; const t = dict[lang]; const s = useStore() || {};
   return (<><Navbar lang={lang} /><div className="page">
@@ -10,8 +51,7 @@ export default function Dashboard({ params }) {
     {s.user?.role === 'company' && <div className="alert ok" style={{ marginBottom: 12 }}><Building2 size={16} /> {s.user?.agency || t.role_company} — {t.become}</div>}
     <div className="row">
       <div className="card card-h"><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><Trophy size={18} color="#b8860b" /> {t.loyalty_box}</h3><p style={{ fontSize: 34, fontWeight: 800, background: 'linear-gradient(90deg,#b8860b,#f59e0b)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{s.points} pts</p><p className="mut">1 DH = 1 pt • -15% dès 2000 pts</p></div>
-      <div className="card card-h"><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><ShieldCheck size={18} /> {t.identity_box}</h3><p>{s.identity ? <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: '#059669', fontWeight: 700 }}><BadgeCheck size={16} />{t.verified}</span> : t.not_verified}</p>
-        {!s.identity && <button className="btn" onClick={() => s.verifyIdentity().catch((e) => alert(e.message))}>{t.identity_box} — 5 min</button>}</div>
+      <KycCard t={t} s={s} />
     </div>
     <div className="card" style={{ marginTop: 14 }}><h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><Gift size={18} /> {t.gift_box}</h3>
       {(s.gifts || []).map((g) => <span key={g.code} className="tag">{g.code} — {g.amount} DH</span>)}
