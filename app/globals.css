@@ -39,6 +39,9 @@ h1,h2,h3{letter-spacing:-.02em}
 /* ---------- Hero ---------- */
 .hero-wrap{background:radial-gradient(900px 480px at 85% -10%,#7c3aed55,transparent 60%),radial-gradient(800px 420px at 8% 10%,#06b6d433,transparent 60%),linear-gradient(180deg,#0d122b 0%,#171d42 100%);color:#fff;overflow:hidden}
 .hero{max-width:1200px;margin:auto;padding:56px 20px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
+.hero > div{min-width:0}
+.hero img{max-width:100%;height:auto;display:block}
+img{max-width:100%}
 .hero h1{font-size:54px;line-height:1.04;margin:16px 0;font-weight:800}
 .hero h1 .g{background:linear-gradient(90deg,#a5b4fc,#e9d5ff,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p.sub{color:#c3c9e6;font-size:17px;max-width:52ch}

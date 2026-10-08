@@ -38,11 +38,11 @@ export default function Landing({ params }) {
           <div><Route size={14} /> {t.how[2]}</div>
         </div>
       </div>
-      <div>
-        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900" alt="Velora" style={{ width: '100%', borderRadius: 26, boxShadow: '0 30px 70px -20px #000000aa', border: '1px solid #ffffff22' }} />
-        <div className="card" style={{ marginTop: -42, marginInline: 22, position: 'relative', display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span style={{ width: 42, height: 42, borderRadius: 13, background: 'linear-gradient(135deg,#4f46e5,#a855f7)', display: 'grid', placeItems: 'center', color: '#fff', flex: 'none' }}><ShieldCheck size={20} /></span>
-          <div><b style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Star size={14} /> 4.9/5 — 12 400+ locations</b><span className="mut">Paiement CMI & cash • Assistance 24/7</span></div>
+      <div style={{ minWidth: 0 }}>
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900" alt="Velora" style={{ width: '100%', maxWidth: '100%', borderRadius: 26, boxShadow: '0 30px 70px -20px #000000aa', border: '1px solid #ffffff22' }} />
+        <div className="card" style={{ marginTop: -42, marginInline: 22, position: 'relative', display: 'flex', gap: 12, alignItems: 'center', background: '#ffffff', border: '1px solid #e8eaf3' }}>
+          <span style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg,#4f46e5,#a855f7)', display: 'grid', placeItems: 'center', color: '#fff', flex: 'none' }}><ShieldCheck size={21} /></span>
+          <div style={{ minWidth: 0 }}><b style={{ display: 'block', color: '#0d122b', fontSize: 15 }}>4.9/5 — 12 400+ locations</b><span style={{ color: '#4b5470', fontSize: 13.5 }}>Paiement CMI & cash • Assistance 24/7</span></div>
         </div>
       </div>
     </div></div>
