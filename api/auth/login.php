@@ -8,5 +8,8 @@ $st = $pdo->prepare('SELECT * FROM users WHERE email=?');
 $st->execute([$email]);
 $u = $st->fetch();
 if (!$u || !password_verify($pass, $u['pass_hash'])) vr_fail('Invalid email or password', 401);
+if (array_key_exists('email_verified', $u) && !(int)$u['email_verified']) {
+  vr_fail('verify_required', 403, ['need_verify' => true, 'email' => $u['email']]);
+}
 $tok = vr_issue_token($pdo, (int)$u['id']);
 vr_ok(['token' => $tok, 'user' => vr_public_user($u)]);

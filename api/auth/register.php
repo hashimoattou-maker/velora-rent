@@ -28,6 +28,9 @@ if ($role === 'company') {
       $agency, $city, $phone, (int)($b['cars'] ?? 0), substr(trim($b['address'] ?? ''), 0, 255), 'Inscription via site (compte agence).']);
   } catch (Exception $e) {}
 }
-$tok = vr_issue_token($pdo, $uid);
-$u = $pdo->query("SELECT * FROM users WHERE id=$uid")->fetch();
-vr_ok(['token' => $tok, 'user' => vr_public_user($u)]);
+$tok = null;
+try {
+  $pdo->exec('ALTER TABLE users ADD COLUMN email_verified TINYINT(1) NOT NULL DEFAULT 0');
+} catch (Exception $e) {}
+// Account created UNVERIFIED — frontend sends OTP via send-code.php, verify-code.php logs in.
+vr_ok(['need_verify' => true, 'email' => $email]);

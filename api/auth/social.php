@@ -53,4 +53,6 @@ if (!$u) {
   $u = $pdo->query('SELECT * FROM users WHERE id=' . (int)$pdo->lastInsertId())->fetch();
 }
 $tok = vr_issue_token($pdo, (int)$u['id']);
+try { $pdo->prepare('UPDATE users SET email_verified=1 WHERE id=?')->execute([(int)$u['id']]); } catch (Exception $e) {}
+$u = $pdo->query('SELECT * FROM users WHERE id=' . (int)$u['id'])->fetch();
 vr_ok(['token' => $tok, 'user' => vr_public_user($u)]);

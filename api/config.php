@@ -18,9 +18,9 @@ if (file_exists($local)) {
   }
 }
 
-function vr_fail($msg, $code = 400) {
+function vr_fail($msg, $code = 400, $extra = []) {
   http_response_code($code);
-  echo json_encode(['ok' => false, 'error' => $msg], JSON_UNESCAPED_UNICODE);
+  echo json_encode(array_merge(['ok' => false, 'error' => $msg], $extra), JSON_UNESCAPED_UNICODE);
   exit;
 }
 function vr_ok($data = []) {

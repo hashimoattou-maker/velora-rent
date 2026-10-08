@@ -60,6 +60,10 @@ h1,h2,h3{letter-spacing:-.02em}
 .social-btn:hover{border-color:var(--pri);box-shadow:var(--ring)}
 .divider{display:flex;align-items:center;gap:12px;color:#9aa3b8;font-size:13px;margin:16px 0}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e6e9f2}
+/* OTP boxes */
+.otp{display:flex;gap:8px;justify-content:center}
+.otp input{width:48px;height:56px;text-align:center;font-size:22px;font-weight:800;border:2px solid #e2e6f2;border-radius:14px;background:#f8f9fd;color:var(--ink);font-family:inherit}
+.otp input:focus{outline:none;border-color:var(--pri);background:#fff;box-shadow:0 0 0 4px #4f46e522}
 
 /* ---------- Buttons ---------- */
 .btn{background:var(--grad);color:#fff;border:0;padding:11px 22px;border-radius:999px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px #7c3aed99;transition:.22s;font-size:14.5px}
