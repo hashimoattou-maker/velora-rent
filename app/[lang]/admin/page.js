@@ -72,10 +72,16 @@ export default function Admin({ params }) {
   };
   const saveOauth = async (e) => {
     e.preventDefault();
+    setMailRes('');
     const d = { google_client_id: oa.google_client_id, facebook_app_id: oa.facebook_app_id, smtp_host: oa.smtp_host, smtp_port: oa.smtp_port, smtp_user: oa.smtp_user, smtp_from: oa.smtp_from };
     if (oa.fb_secret) d.facebook_app_secret = oa.fb_secret;
     if (oa.smtp_pass) d.smtp_pass = oa.smtp_pass;
-    try { await admin.oauthSet(d); alert('✅ Enregistré !'); setOa({ ...oa, fb_secret: '', fb_set: oa.fb_set || !!oa.fb_secret, smtp_pass: '', smtp_set: oa.smtp_set || !!oa.smtp_pass }); }
+    try {
+      await admin.oauthSet(d);
+      setOa({ ...oa, fb_secret: '', fb_set: oa.fb_set || !!oa.fb_secret, smtp_pass: '', smtp_set: oa.smtp_set || !!oa.smtp_pass });
+      if (mailTo) { await testMail(); }
+      else alert('✅ Enregistré !');
+    }
     catch (ex) { alert('❌ ' + ex.message); }
   };
 
