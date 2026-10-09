@@ -49,6 +49,13 @@ export default function Admin({ params }) {
     load('cars');
   };
   const [syncing, setSyncing] = useState(false);
+  const [mailTo, setMailTo] = useState('');
+  const [mailRes, setMailRes] = useState('');
+  const testMail = async () => {
+    setMailRes('⏳…');
+    try { const r = await admin.mailTest(mailTo); setMailRes('✅ Envoyé via ' + r.via + ' → vérifiez Inbox/Spam de ' + mailTo); }
+    catch (e) { setMailRes('❌ ' + e.message); }
+  };
   const [oa, setOa] = useState({ google_client_id: '', facebook_app_id: '', fb_secret: '', fb_set: false, smtp_host: '', smtp_port: '587', smtp_user: '', smtp_from: '', smtp_set: false, smtp_pass: '' });
   const syncPhotos = async () => {
     setSyncing(true);
@@ -154,6 +161,11 @@ export default function Admin({ params }) {
         <label>SMTP password {oa.smtp_set && <small className="mut">(enregistré ✓)</small>}<input dir="ltr" type="password" value={oa.smtp_pass} onChange={(e) => setOa({ ...oa, smtp_pass: e.target.value })} placeholder={oa.smtp_set ? '••••••' : 'password…'} /></label>
         <label>From (expéditeur)<input dir="ltr" value={oa.smtp_from} onChange={(e) => setOa({ ...oa, smtp_from: e.target.value })} placeholder="Velora Rent <contact@votre-domaine>" /></label>
         </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+          <input dir="ltr" value={mailTo} onChange={(e) => setMailTo(e.target.value)} placeholder="test@email.com" style={{ flex: 1, padding: 10, borderRadius: 12, border: '1.5px solid #e2e6f2' }} />
+          <button type="button" className="btn-light" onClick={testMail}>✉️ Tester</button>
+        </div>
+        {mailRes && <p className="mut">{mailRes}</p>}
         <button className="btn"><Save size={15} /> Enregistrer</button>
       </form>
       <p className="mut" style={{ marginTop: 10 }}>Google : console.cloud.google.com → Credentials → OAuth client (Web) → origin = votre domaine<br />Facebook : developers.facebook.com → App → Facebook Login → App Domains = même domaine</p>
