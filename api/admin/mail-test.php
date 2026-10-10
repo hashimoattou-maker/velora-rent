@@ -10,6 +10,12 @@ $to = trim($b['to'] ?? '');
 if (!filter_var($to, FILTER_VALIDATE_EMAIL)) vr_fail('Invalid email');
 $c = vr_mail_cfg();
 $info = ['host' => $c['host'], 'port' => $c['port'], 'user_set' => $c['user'] !== '', 'pass_set' => $c['pass'] !== '', 'from' => $c['from']];
+$info['deployed_mtime'] = @date('Y-m-d H:i', @filemtime(__FILE__));
+try {
+  $keys = [];
+  foreach ($pdo->query("SELECT `k`, LENGTH(`v`) l FROM settings") as $r) $keys[] = $r['k'] . '(' . $r['l'] . ')';
+  $info['settings_keys'] = $keys;
+} catch (Exception $e) { $info['settings_keys'] = 'ERR:' . $e->getMessage(); }
 if (empty($c['host']) || empty($c['user']) || empty($c['pass'])) vr_fail('smtp_not_configured', 400, ['cfg' => $info]);
 $html = '<div style="font-family:Arial;padding:20px"><h2>Velora Rent — test email ✅</h2><p>Si tu lis ceci, SMTP marche.</p></div>';
 try {

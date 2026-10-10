@@ -56,7 +56,7 @@ export default function Admin({ params }) {
     try { const r = await admin.mailTest(mailTo); setMailRes('✅ Envoyé via ' + r.via + ' → vérifiez Inbox/Spam de ' + mailTo); }
     catch (e) {
       const c = e.data || {};
-      setMailRes('❌ ' + e.message + ' | cfg=' + JSON.stringify(c.cfg || c));
+      setMailRes('❌ ' + e.message + ' | ' + JSON.stringify(c.cfg || c));
     }
   };
   const [oa, setOa] = useState({ google_client_id: '', facebook_app_id: '', fb_secret: '', fb_set: false, smtp_host: '', smtp_port: '587', smtp_user: '', smtp_from: '', smtp_set: false, smtp_pass: '' });
