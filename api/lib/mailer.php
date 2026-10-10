@@ -6,7 +6,7 @@ function vr_mail_cfg() {
     'user' => getenv('VR_SMTP_USER') ?: '', 'pass' => getenv('VR_SMTP_PASS') ?: '', 'from' => getenv('VR_SMTP_FROM') ?: ''];
   try {
     $h = getenv('VR_DB_HOST') ?: 'localhost';
-    $f = __DIR__ . '/.db.php';
+    $f = __DIR__ . '/../.db.php'; // mailer lives in api/lib/ → DB file is in api/
     $db = ['host' => $h, 'name' => getenv('VR_DB_NAME') ?: '', 'user' => getenv('VR_DB_USER') ?: '', 'pass' => getenv('VR_DB_PASS') ?: ''];
     if (file_exists($f) && function_exists('vr_parse_php_array')) {
       $o = vr_parse_php_array($f, ['host', 'name', 'user', 'pass']);
