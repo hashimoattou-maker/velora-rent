@@ -17,6 +17,9 @@ npm install
 npm run dev   # http://localhost:3000/fr
 ```
 
+## Migrations SQL (importer une fois chacune, dans l'ordre)
+- `database.sql` (install), `update-images.sql`, `update-map.sql`, `update-accounts.sql`, `update-verify.sql`, `update-kyc.sql`, **`update-fleet.sql`** (owner flotte agences)
+
 ## Backend 100% Hostinger : PHP + MySQL (inclus Business, sans Supabase)
 
 1. **Créer la base :** hPanel → Databases → créez DB + user (notez `host/user/name/pass`)

@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Navbar, Footer } from '@/components/ui';
 import { admin, getAdminToken, setAdminToken } from '@/lib/api';
-import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp, KeyRound, Save, IdCard, Check, X } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Car, Inbox, Lock, RefreshCw, LogOut, TrendingUp, KeyRound, Save, IdCard, Check, X, Pencil, Trash2, Plus } from 'lucide-react';
+import CarForm from '@/components/CarForm';
 
 const TABS = [['stats', 'Stats', LayoutDashboard], ['bookings', 'Réservations', Ticket], ['clients', 'Clients', Users], ['cars', 'Voitures', Car], ['kyc', 'KYC', IdCard], ['inbox', 'Messages', Inbox], ['oauth', 'Google/FB', KeyRound]];
 
@@ -49,6 +50,9 @@ export default function Admin({ params }) {
     load('cars');
   };
   const [syncing, setSyncing] = useState(false);
+  const [carForm, setCarForm] = useState(null); // null | {…car} | {__new:true}
+  const [editUser, setEditUser] = useState(null);
+  const [uform, setUform] = useState({});
   const [mailTo, setMailTo] = useState('');
   const [mailRes, setMailRes] = useState('');
   const testMail = async () => {
@@ -91,6 +95,27 @@ export default function Admin({ params }) {
   const setKyc = async (id, status) => {
     await admin.kycSet(id, status);
     load('kyc');
+  };
+  const delCar = async (slug) => {
+    if (!confirm('Supprimer définitivement ?')) return;
+    await admin.carDelete(slug);
+    load('cars');
+  };
+  const saveCar = async (d) => {
+    try {
+      if (carForm?.slug) await admin.setCar(carForm.slug, d);
+      else await admin.carCreate(d);
+      setCarForm(null); load('cars');
+    } catch (e) { alert('❌ ' + e.message); }
+  };
+  const delUser = async (id) => {
+    if (!confirm('Supprimer ce client + ses réservations ?')) return;
+    await admin.userDelete(id);
+    load('clients');
+  };
+  const saveUser = async () => {
+    try { await admin.userSet(editUser, uform); setEditUser(null); load('clients'); }
+    catch (e) { alert('❌ ' + e.message); }
   };
 
   if (!tok) return (<><Navbar lang={lang} /><div className="page" style={{ maxWidth: 440 }}>
@@ -138,19 +163,41 @@ export default function Admin({ params }) {
         <td><select defaultValue={b.status} onChange={(e) => setStatus(b.code, e.target.value)}>
           <option value="pending">pending</option><option value="paid">paid</option><option value="cancelled">cancelled</option></select></td></tr>)}</tbody></table></div>}
 
-    {tab === 'clients' && data?.users && <div className="card"><table className="table">
-      <thead><tr><th>#</th><th>Nom</th><th>Email / Tél</th><th>Ville</th><th>Points</th><th>KYC</th></tr></thead>
-      <tbody>{data.users.map((u) => <tr key={u.id}><td>{u.id}</td><td>{u.name}</td><td>{u.email}<br /><small className="mut">{u.phone}</small></td><td>{u.city}</td><td>{u.points}</td><td>{u.identity_verified ? '✅' : '—'}</td></tr>)}</tbody></table></div>}
+    {tab === 'clients' && data?.users && <div className="card"><h3>Clients ({data.users.length})</h3><table className="table">
+      <thead><tr><th>#</th><th>Nom</th><th>Email / Tél</th><th>Ville</th><th>Points</th><th>KYC</th><th></th></tr></thead>
+      <tbody>{data.users.map((u) => editUser === u.id ? (
+        <tr key={u.id}><td>{u.id}</td>
+          <td><input value={uform.name ?? u.name} onChange={(e) => setUform({ ...uform, name: e.target.value })} style={{ width: 110 }} /></td>
+          <td>{u.email}<br /><input value={uform.phone ?? u.phone} onChange={(e) => setUform({ ...uform, phone: e.target.value })} style={{ width: 110 }} /></td>
+          <td><input value={uform.city ?? u.city} onChange={(e) => setUform({ ...uform, city: e.target.value })} style={{ width: 90 }} /></td>
+          <td><input type="number" value={uform.points ?? u.points} onChange={(e) => setUform({ ...uform, points: e.target.value })} style={{ width: 70 }} /></td>
+          <td>{u.identity_verified ? '✅' : '—'}</td>
+          <td style={{ whiteSpace: 'nowrap' }}><button className="btn sm" onClick={saveUser}><Check size={14} /></button> <button className="btn-light sm" onClick={() => setEditUser(null)}><X size={14} /></button></td></tr>
+      ) : (
+        <tr key={u.id}><td>{u.id}</td><td>{u.name}{u.role === 'company' ? <><br /><small className="mut">🏢 {u.agency}</small></> : null}</td><td>{u.email}<br /><small className="mut">{u.phone}</small></td><td>{u.city}</td><td>{u.points}</td><td>{u.identity_verified ? '✅' : '—'}</td>
+          <td style={{ whiteSpace: 'nowrap' }}><button className="btn-light sm" onClick={() => { setEditUser(u.id); setUform({}); }}><Pencil size={14} /></button> <button className="btn-light sm" onClick={() => delUser(u.id)}><Trash2 size={14} /></button></td></tr>
+      ))}</tbody></table></div>}
 
     {tab === 'cars' && data?.cars && <div className="card">
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
         <h3 style={{ margin: 0, marginInlineEnd: 'auto' }}>Voitures ({data.cars.length})</h3>
-        <button className="btn" onClick={syncPhotos} disabled={syncing}>{syncing ? '⏳ Sync…' : '🖼️ Sync vraies photos (12)'}</button>
-      </div><table className="table">
-      <thead><tr><th>Voiture</th><th>Ville</th><th>Prix/j</th><th>Actif</th></tr></thead>
-      <tbody>{data.cars.map((c) => <tr key={c.slug}><td>{c.brand} {c.model} ⭐{c.rating}</td><td>{c.city}</td>
-        <td><input type="number" defaultValue={c.price} style={{ width: 90 }} onBlur={(e) => { if (+e.target.value !== c.price) setCar(c.slug, { price: +e.target.value }); }} /> DH</td>
-        <td><input type="checkbox" defaultChecked={!!+c.active} onChange={(e) => setCar(c.slug, { active: e.target.checked ? 1 : 0 })} /></td></tr>)}</tbody></table></div>}
+        <button className="btn sm" onClick={() => setCarForm({ __new: true })}><Plus size={15} /> Ajouter</button>
+        <button className="btn-light sm" onClick={syncPhotos} disabled={syncing}>{syncing ? '⏳ Sync…' : '🖼️ Sync photos'}</button>
+      </div>
+      {carForm && <div className="card" style={{ background: '#f8f9fd', marginBottom: 12 }}>
+        <h3>{carForm.slug ? 'Modifier : ' + carForm.brand + ' ' + carForm.model : 'Nouvelle voiture'}</h3>
+        <CarForm initial={carForm.slug ? carForm : {}} companies={[...new Set(data.cars.map((c) => c.company).filter(Boolean))]}
+          saveLabel={carForm.slug ? 'Enregistrer' : 'Ajouter'} cancelLabel="Annuler"
+          onCancel={() => setCarForm(null)} onSubmit={saveCar} />
+      </div>}
+      <table className="table">
+      <thead><tr><th></th><th>Voiture</th><th>Ville</th><th>Prix/j</th><th>Actif</th><th></th></tr></thead>
+      <tbody>{data.cars.map((c) => <tr key={c.slug}>
+        <td>{c.img && <img src={c.img} alt="" style={{ width: 64, height: 40, objectFit: 'cover', borderRadius: 8 }} />}</td>
+        <td>{c.brand} {c.model} ⭐{c.rating}<br /><small className="mut">{c.company}</small></td><td>{c.city}</td>
+        <td><input type="number" defaultValue={c.price} style={{ width: 80 }} onBlur={(e) => { if (+e.target.value !== c.price) setCar(c.slug, { price: +e.target.value }); }} /> DH</td>
+        <td><input type="checkbox" defaultChecked={!!+c.active} onChange={(e) => setCar(c.slug, { active: e.target.checked ? 1 : 0 })} /></td>
+        <td style={{ whiteSpace: 'nowrap' }}><button className="btn-light sm" onClick={() => { setCarForm(c); window.scrollTo(0, 0); }}><Pencil size={14} /></button> <button className="btn-light sm" onClick={() => delCar(c.slug)}><Trash2 size={14} /></button></td></tr>)}</tbody></table></div>}
 
     {tab === 'oauth' && data?.oauth && <div className="card" style={{ maxWidth: 640 }}>
       <h3 style={{ display: 'flex', gap: 8, alignItems: 'center' }}><KeyRound size={18} /> Connexion Google / Facebook</h3>
