@@ -83,7 +83,7 @@ export function DetailClient({ lang, id }) {
   ];
   const payBtn = method === 'card' ? b.btn_card : method === 'bank' ? b.btn_bank : b.btn_cash;
   return (<><Navbar lang={lang} />
-  <style>{`.bk-sec{margin-top:14px}.bk-sec>h4{margin:0 0 8px;font-size:14px;display:flex;gap:8px;align-items:center}.opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.opt-grid.two{grid-template-columns:1fr 1fr;gap:8px}.opt{border:1.5px solid #e2e6f2;border-radius:14px;padding:10px;display:flex;gap:8px;align-items:center;cursor:pointer;background:#f8f9fd;font-size:13px;font-weight:700}.opt.on{border-color:var(--pri);background:#fff;box-shadow:0 0 0 4px #4f46e522}.opt small{display:block;font-weight:400;color:#68718f}.gift-row{display:flex;gap:8px}.gift-row input{flex:1;text-transform:uppercase}.sum{margin-top:12px;border-top:1px dashed #e2e6f2;padding-top:10px;display:grid;gap:6px;font-size:14px}.sum .line{display:flex;justify-content:space-between}.sum .grand{font-weight:800;font-size:17px}.frm2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:640px){.frm2{grid-template-columns:1fr}.opt-grid{grid-template-columns:1fr}}`}</style>
+  <style>{`.bk-sec{margin-top:14px}.bk-sec>h4{margin:0 0 8px;font-size:14px;display:flex;gap:8px;align-items:center}.opt-list{display:grid;gap:8px}.opt-row{border:1.5px solid #e2e6f2;border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center;cursor:pointer;background:#f8f9fd;font-size:14px;font-weight:700}.opt-row.on{border-color:var(--pri);background:#fff;box-shadow:0 0 0 4px #4f46e522}.opt-row small{display:block;font-weight:400;color:#68718f;font-size:12px}.opt-row .radio-dot{margin-inline-start:auto;width:20px;height:20px;border-radius:50%;border:2px solid #cbd5e1;flex:none;display:grid;place-items:center}.opt-row.on .radio-dot{border-color:var(--pri)}.opt-row.on .radio-dot::after{content:'';width:10px;height:10px;border-radius:50%;background:var(--pri)}.check-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1.5px solid #eef0f7;background:#fff;border-radius:14px;padding:11px 12px;font-size:14px;font-weight:600;cursor:pointer;margin:0}.check-row>span:first-child{display:flex;gap:8px;align-items:center}.check-row input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:0}.gift-row{display:flex;gap:8px}.gift-row input{flex:1;min-width:0;text-transform:uppercase}.gift-row .btn-light{flex:none}.sum{margin-top:12px;border-top:1px dashed #e2e6f2;padding-top:10px;display:grid;gap:6px;font-size:14px}.sum .line{display:flex;justify-content:space-between;gap:10px}.sum .grand{font-weight:800;font-size:17px}.frm2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:grid;gap:6px;min-width:0}.field input,.field textarea{min-width:0}@media(max-width:640px){.frm2{grid-template-columns:1fr}}`}</style>
   <div className="page"><div className="row">
     <div>
       <img src={car.img} style={{ width: '100%', borderRadius: 20 }} />
@@ -119,27 +119,29 @@ export function DetailClient({ lang, id }) {
         </div>
         {!datesOk && <div className="alert err">{b.err_dates}</div>}
         <p className="mut" style={{ fontSize: 12.5 }}>{b.extend}</p>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 14 }}><input type="checkbox" checked={d2} onChange={(e) => setD2(e.target.checked)} /> <Users size={15} /> {b.d2}</label>
+        <label className="check-row"><span><Users size={16} /> {b.d2}</span><input type="checkbox" checked={d2} onChange={(e) => setD2(e.target.checked)} /></label>
         {d2 && <label>{b.d2_name}<input value={d2name} onChange={(e) => setD2name(e.target.value)} placeholder={b.d2_hint} /></label>}
         <div className="frm2">
           <label><span style={{ display: 'flex', gap: 6, alignItems: 'center' }}><MapPin size={14} />{b.pickup}</span><input value={pickup} onChange={(e) => setPickup(e.target.value)} /></label>
           <label><span style={{ display: 'flex', gap: 6, alignItems: 'center' }}><MapPin size={14} />{b.dropoff}</span><input value={dropoff} onChange={(e) => setDropoff(e.target.value)} /></label>
         </div>
         <div className="bk-sec"><h4><ShieldCheck size={15} />{b.ins}</h4>
-          <div className="opt-grid two">
-            <div className={'opt' + (ins === 'none' ? ' on' : '')} onClick={() => setIns('none')}><ShieldCheck size={18} /><span>{b.ins_none}<small>{b.ins_none_d} • {b.ins_free}</small></span></div>
-            <div className={'opt' + (ins === 'full' ? ' on' : '')} onClick={() => setIns('full')}><ShieldCheck size={18} /><span>{b.insurance_full}</span></div>
+          <div className="opt-list">
+            <div className={'opt-row' + (ins === 'none' ? ' on' : '')} onClick={() => setIns('none')}><ShieldCheck size={20} /><span>{b.ins_none}<small>{b.ins_none_d} • {b.ins_free}</small></span><span className="radio-dot" /></div>
+            <div className={'opt-row' + (ins === 'full' ? ' on' : '')} onClick={() => setIns('full')}><ShieldCheck size={20} /><span>{b.insurance_full}</span><span className="radio-dot" /></div>
           </div>
         </div>
         <div className="bk-sec"><h4>{b.extras}</h4>
-          <label style={{ display: 'flex', gap: 8, fontSize: 14 }}><input type="checkbox" checked={gps} onChange={(e) => setGps(e.target.checked)} /> {b.gps}</label>
-          <label style={{ display: 'flex', gap: 8, fontSize: 14 }}><input type="checkbox" checked={baby} onChange={(e) => setBaby(e.target.checked)} /> {b.baby}</label>
+          <div className="opt-list">
+            <label className="check-row"><span>{b.gps}</span><input type="checkbox" checked={gps} onChange={(e) => setGps(e.target.checked)} /></label>
+            <label className="check-row"><span>{b.baby}</span><input type="checkbox" checked={baby} onChange={(e) => setBaby(e.target.checked)} /></label>
+          </div>
         </div>
         <div className="bk-sec"><h4><CreditCard size={15} />{b.paym}</h4>
-          <div className="opt-grid">
-            <div className={'opt' + (method === 'cash' ? ' on' : '')} onClick={() => setMethod('cash')}><Banknote size={18} /><span>{b.pay_cash2}</span></div>
-            <div className={'opt' + (method === 'card' ? ' on' : '')} onClick={() => setMethod('card')}><CreditCard size={18} /><span>{b.pay_card}</span></div>
-            <div className={'opt' + (method === 'bank' ? ' on' : '')} onClick={() => setMethod('bank')}><Landmark size={18} /><span>{b.pay_bank}</span></div>
+          <div className="opt-list">
+            <div className={'opt-row' + (method === 'cash' ? ' on' : '')} onClick={() => setMethod('cash')}><Banknote size={20} /><span>{b.pay_cash2}<small>{b.pay_cash}</small></span><span className="radio-dot" /></div>
+            <div className={'opt-row' + (method === 'card' ? ' on' : '')} onClick={() => setMethod('card')}><CreditCard size={20} /><span>{b.pay_card}<small>{b.pay}</small></span><span className="radio-dot" /></div>
+            <div className={'opt-row' + (method === 'bank' ? ' on' : '')} onClick={() => setMethod('bank')}><Landmark size={20} /><span>{b.pay_bank}</span><span className="radio-dot" /></div>
           </div>
         </div>
         <div className="bk-sec"><h4><Gift size={15} />{b.gift_t}</h4>
@@ -152,13 +154,13 @@ export function DetailClient({ lang, id }) {
         <label><span style={{ display: 'flex', gap: 6, alignItems: 'center' }}><FileText size={14} />{b.notes}</span><textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={b.notes_ph} /></label>
         <div className="sum">
           <div className="line"><span>{b.days_n}: {days} {b.day}</span><span>{base} DH</span></div>
-          {(gpsAmt > 0) && <div className="line"><span>GPS</span><span>+{gpsAmt} DH</span></div>}
-          {(babyAmt > 0) && <div className="line"><span> Baby</span><span>+{babyAmt} DH</span></div>}
+          {(gpsAmt > 0) && <div className="line"><span>{b.gps.split('+')[0]}</span><span>+{gpsAmt} DH</span></div>}
+          {(babyAmt > 0) && <div className="line"><span>{b.baby.split('+')[0]}</span><span>+{babyAmt} DH</span></div>}
           {(insAmt > 0) && <div className="line"><span>{b.ins}</span><span>+{insAmt} DH</span></div>}
           {(discount > 0) && <div className="line" style={{ color: '#059669' }}><span>🎁 −{discount} DH</span></div>}
           <div className="line grand"><span>{b.grand}</span><span>{grand} DH</span></div>
         </div>
-        <button className="btn" onClick={book}><Rocket size={16} /> {payBtn} — {grand} DH</button>
+        <button className="btn" style={{ width: '100%', justifyContent: 'center', padding: '14px' }} onClick={book}><Rocket size={16} /> {payBtn} — {grand} DH</button>
       </div></div>
   </div></div><Footer lang={lang} /></>);
 }
