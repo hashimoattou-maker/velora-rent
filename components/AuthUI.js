@@ -61,6 +61,11 @@ export function SocialButtons({ t, role, onDone, onError }) {
     document.head.appendChild(s);
     return () => { try { document.head.removeChild(s); } catch {} };
   }, []);
+  // Preload FB SDK at mount so FB.login can run synchronously in the click
+  // (browsers block popups opened after an await). Falls back to async load.
+  useEffect(() => {
+    if (cfg?.facebook && cfg.facebook_app_id && !window.FB) loadFacebook(cfg.facebook_app_id).catch(() => {});
+  }, [cfg]);
 
   const google = () => {
     if (busy) return;
@@ -81,24 +86,29 @@ export function SocialButtons({ t, role, onDone, onError }) {
     } catch (e) { setBusy(null); onError(e.message); }
   };
 
-  const facebook = async () => {
+  const doFbLogin = (FB) => {
+    try {
+      FB.login(async (resp) => {
+        try {
+          if (!resp || !resp.authResponse) { setBusy(null); return onError(t.fb_cancel); }
+          const u = await socialServer({ provider: 'facebook', access_token: resp.authResponse.accessToken, role });
+          setBusy(null); onDone(u);
+        } catch (e) { setBusy(null); onError(e.message); }
+      }, { scope: 'email,public_profile' });
+      // Safety net: if the popup was blocked and no callback ever fires, unstick the button
+      setTimeout(() => setBusy((b) => (b === 'fb' ? null : b)), 30000);
+    } catch (e) { setBusy(null); onError(t.fb_popup); }
+  };
+  const facebook = () => {
     if (busy) return;
     onError('');
     if (!cfg?.facebook) return onError(t.social_soon);
     setBusy('fb');
-    try {
-      const FB = await loadFacebook(cfg.facebook_app_id);
-      if (!FB) { setBusy(null); return onError('Facebook…'); }
-      try {
-        FB.login(async (resp) => {
-          try {
-            if (!resp || !resp.authResponse) { setBusy(null); return onError(t.fb_cancel); }
-            const u = await socialServer({ provider: 'facebook', access_token: resp.authResponse.accessToken, role });
-            setBusy(null); onDone(u);
-          } catch (e) { setBusy(null); onError(e.message); }
-        }, { scope: 'email,public_profile' });
-      } catch (e) { setBusy(null); return onError(t.fb_popup); }
-    } catch (e) { setBusy(null); return onError(e.message || 'Facebook…'); }
+    if (window.FB) { doFbLogin(window.FB); return; } // synchronous: popup allowed
+    loadFacebook(cfg.facebook_app_id).then((FB) => {
+      if (!FB) { setBusy(null); onError('Facebook…'); return; }
+      doFbLogin(FB);
+    }).catch((e) => { setBusy(null); onError(e.message || 'Facebook…'); });
   };
 
   const apple = () => onError(t.social_soon + ' (Apple Developer $99/yr)');
