@@ -33,22 +33,7 @@ const AppleIcon = () => (
   <svg width="19" height="19" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" /></svg>
 );
 
-let fbLoaded = null;
-function loadFacebook(appId) {
-  if (fbLoaded) return fbLoaded;
-  fbLoaded = new Promise((resolve) => {
-    if (window.FB) return resolve(window.FB);
-    window.fbAsyncInit = () => { window.FB.init({ appId, cookie: true, xfbml: false, version: 'v19.0' }); resolve(window.FB); };
-    const s = document.createElement('script');
-    s.src = 'https://connect.facebook.net/en_US/sdk.js'; s.async = true;
-    s.onerror = () => resolve(window.FB || null);
-    document.head.appendChild(s);
-    setTimeout(() => resolve(window.FB || null), 8000);
-  });
-  return fbLoaded;
-}
-
-export function SocialButtons({ t, role, onDone, onError }) {
+export function SocialButtons({ t, role, lang, onDone, onError }) {
   const { socialServer } = useStore() || {};
   const [cfg, setCfg] = useState(null);
   const [gisReady, setGisReady] = useState(false);
@@ -61,11 +46,7 @@ export function SocialButtons({ t, role, onDone, onError }) {
     document.head.appendChild(s);
     return () => { try { document.head.removeChild(s); } catch {} };
   }, []);
-  // Preload FB SDK at mount so FB.login can run synchronously in the click
-  // (browsers block popups opened after an await). Falls back to async load.
-  useEffect(() => {
-    if (cfg?.facebook && cfg.facebook_app_id && !window.FB) loadFacebook(cfg.facebook_app_id).catch(() => {});
-  }, [cfg]);
+
 
   const google = () => {
     if (busy) return;
@@ -86,29 +67,20 @@ export function SocialButtons({ t, role, onDone, onError }) {
     } catch (e) { setBusy(null); onError(e.message); }
   };
 
-  const doFbLogin = (FB) => {
-    try {
-      FB.login(async (resp) => {
-        try {
-          if (!resp || !resp.authResponse) { setBusy(null); return onError(t.fb_cancel); }
-          const u = await socialServer({ provider: 'facebook', access_token: resp.authResponse.accessToken, role });
-          setBusy(null); onDone(u);
-        } catch (e) { setBusy(null); onError(e.message); }
-      }, { scope: 'email,public_profile' });
-      // Safety net: if the popup was blocked and no callback ever fires, unstick the button
-      setTimeout(() => setBusy((b) => (b === 'fb' ? null : b)), 30000);
-    } catch (e) { setBusy(null); onError(t.fb_popup); }
-  };
+  // Full-page redirect (no SDK, no popup): always works, never blocked.
+  // Requires redirect_uri whitelisted in the Facebook app settings.
   const facebook = () => {
     if (busy) return;
     onError('');
-    if (!cfg?.facebook) return onError(t.social_soon);
-    setBusy('fb');
-    if (window.FB) { doFbLogin(window.FB); return; } // synchronous: popup allowed
-    loadFacebook(cfg.facebook_app_id).then((FB) => {
-      if (!FB) { setBusy(null); onError('Facebook…'); return; }
-      doFbLogin(FB);
-    }).catch((e) => { setBusy(null); onError(e.message || 'Facebook…'); });
+    if (!cfg?.facebook || !cfg.facebook_app_id) return onError(t.social_soon);
+    const state = btoa(JSON.stringify({ lang: lang || 'fr', role: role || 'client' }))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const redirect = window.location.origin + '/auth/callback/';
+    const url = 'https://www.facebook.com/v19.0/dialog/oauth?client_id='
+      + encodeURIComponent(cfg.facebook_app_id)
+      + '&redirect_uri=' + encodeURIComponent(redirect)
+      + '&scope=email,public_profile&response_type=token&state=' + state;
+    window.location.href = url;
   };
 
   const apple = () => onError(t.social_soon + ' (Apple Developer $99/yr)');

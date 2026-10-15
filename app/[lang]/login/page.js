@@ -42,7 +42,7 @@ function Inner({ lang }) {
         ) : (<>
           <TypeCards t={t} role={role} setRole={setRole} />
           {err && <div className="alert err"><AlertTriangle size={16} /> {err}</div>}
-          <SocialButtons t={t} role={role} onDone={done} onError={setErr} />
+          <SocialButtons t={t} role={role} lang={lang} onDone={done} onError={setErr} />
           <div className="divider">{t.or_x}</div>
           <form onSubmit={go} className="field" style={{ display: 'grid', gap: 10 }}>
             <label>{t.auth.email}<input required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@mail.com" /></label>
