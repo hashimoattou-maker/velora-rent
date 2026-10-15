@@ -91,7 +91,6 @@ export function SocialButtons({ t, role, onDone, onError }) {
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <button type="button" className="social-btn" onClick={google}><GIcon /> {t.cont_google}</button>
-      <button type="button" className="social-btn" onClick={apple}><AppleIcon /> {t.cont_apple}</button>
       <button type="button" className="social-btn" onClick={facebook}><FbIcon /> {t.cont_fb}</button>
     </div>
   );
