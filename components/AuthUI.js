@@ -41,6 +41,7 @@ function loadFacebook(appId) {
     window.fbAsyncInit = () => { window.FB.init({ appId, cookie: true, xfbml: false, version: 'v19.0' }); resolve(window.FB); };
     const s = document.createElement('script');
     s.src = 'https://connect.facebook.net/en_US/sdk.js'; s.async = true;
+    s.onerror = () => resolve(window.FB || null);
     document.head.appendChild(s);
     setTimeout(() => resolve(window.FB || null), 8000);
   });
@@ -51,6 +52,7 @@ export function SocialButtons({ t, role, onDone, onError }) {
   const { socialServer } = useStore() || {};
   const [cfg, setCfg] = useState(null);
   const [gisReady, setGisReady] = useState(false);
+  const [busy, setBusy] = useState(null);
   useEffect(() => {
     api.oauthConfig().then((r) => setCfg(r.providers)).catch(() => setCfg({}));
     const s = document.createElement('script');
@@ -61,37 +63,50 @@ export function SocialButtons({ t, role, onDone, onError }) {
   }, []);
 
   const google = () => {
+    if (busy) return;
+    onError('');
     if (!cfg?.google) return onError(t.social_soon);
     if (!gisReady || !window.google) return onError('Google…');
+    setBusy('g');
     try {
       window.google.accounts.id.initialize({
         client_id: cfg.google_client_id,
         callback: async (res) => {
           try { const u = await socialServer({ provider: 'google', id_token: res.credential, role }); onDone(u); }
-          catch (e) { onError(e.message); }
+          catch (e) { setBusy(null); onError(e.message); }
         },
       });
       window.google.accounts.id.prompt();
-    } catch (e) { onError(e.message); }
+      setTimeout(() => setBusy(null), 12000);
+    } catch (e) { setBusy(null); onError(e.message); }
   };
 
   const facebook = async () => {
+    if (busy) return;
+    onError('');
     if (!cfg?.facebook) return onError(t.social_soon);
-    const FB = await loadFacebook(cfg.facebook_app_id);
-    if (!FB) return onError('Facebook…');
-    FB.login(async (resp) => {
-      if (!resp.authResponse) return;
-      try { const u = await socialServer({ provider: 'facebook', access_token: resp.authResponse.accessToken, role }); onDone(u); }
-      catch (e) { onError(e.message); }
-    }, { scope: 'email,public_profile' });
+    setBusy('fb');
+    try {
+      const FB = await loadFacebook(cfg.facebook_app_id);
+      if (!FB) { setBusy(null); return onError('Facebook…'); }
+      try {
+        FB.login(async (resp) => {
+          try {
+            if (!resp || !resp.authResponse) { setBusy(null); return onError(t.fb_cancel); }
+            const u = await socialServer({ provider: 'facebook', access_token: resp.authResponse.accessToken, role });
+            setBusy(null); onDone(u);
+          } catch (e) { setBusy(null); onError(e.message); }
+        }, { scope: 'email,public_profile' });
+      } catch (e) { setBusy(null); return onError(t.fb_popup); }
+    } catch (e) { setBusy(null); return onError(e.message || 'Facebook…'); }
   };
 
   const apple = () => onError(t.social_soon + ' (Apple Developer $99/yr)');
 
   return (
     <div style={{ display: 'grid', gap: 10 }}>
-      <button type="button" className="social-btn" onClick={google}><GIcon /> {t.cont_google}</button>
-      <button type="button" className="social-btn" onClick={facebook}><FbIcon /> {t.cont_fb}</button>
+      <button type="button" className="social-btn" onClick={google} disabled={!!busy}><GIcon /> {busy === 'g' ? '…' : t.cont_google}</button>
+      <button type="button" className="social-btn" onClick={facebook} disabled={!!busy}><FbIcon /> {busy === 'fb' ? '…' : t.cont_fb}</button>
     </div>
   );
 }
